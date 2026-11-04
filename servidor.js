@@ -10,17 +10,12 @@ const io = new Server(server, { cors: { origin: '*' } });
 
 app.use(express.static('public'));
 
-// --- BANCO DE DADOS SIMPLES (JOGADORES) ---
+// --- BANCO DE DADOS DE CONTAS ---
 const DB_FILE = path.join(__dirname, 'jogadores.json');
 let contas = {};
 
-// Carrega as contas salvas
 if (fs.existsSync(DB_FILE)) {
-  try {
-    contas = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
-  } catch (e) {
-    contas = {};
-  }
+  try { contas = JSON.parse(fs.readFileSync(DB_FILE, 'utf8')); } catch (e) { contas = {}; }
 }
 
 function salvarContas() {
@@ -29,7 +24,7 @@ function salvarContas() {
 
 // --- ESTADO DO JOGO ---
 const estado = {
-  jogadores: {}, // Jogadores ativos na sala atual
+  jogadores: {},
   fase: 'lobby',
   energia: 100,
   rodada: 0,
@@ -38,6 +33,11 @@ const estado = {
 
 const MAX_JOGADORES = 5;
 const MIN_JOGADORES = 2;
+
+const AVATARES = {
+  parzival: { emoji: '🛡️', nome: 'Parzival' }, art3mis: { emoji: '⚡', nome: 'Art3mis' },
+  curator: { emoji: '🧠', nome: 'Curator' }, irok: { emoji: '💥', nome: 'I-R0k' }, og: { emoji: '🔮', nome: 'Og' }
+};
 
 const PERGUNTAS = [
   { p: "🧩 ENIGMA: Se 3 Gunters resolvem 3 enigmas em 3 minutos, quanto tempo 9 Gunters levam para 9 enigmas?", o: ["9 minutos", "3 minutos", "27 minutos", "1 minuto"], c: 1 },
@@ -48,10 +48,7 @@ const PERGUNTAS = [
 function enviarEstado() {
   io.emit('estadoJogo', {
     jogadores: Object.values(estado.jogadores),
-    fase: estado.fase,
-    energia: estado.energia,
-    rodada: estado.rodada,
-    maxJogadores: MAX_JOGADORES
+    fase: estado.fase, energia: estado.energia, rodada: estado.rodada, maxJogadores: MAX_JOGADORES
   });
 }
 
@@ -59,10 +56,7 @@ function iniciarRodada() {
   if (estado.fase !== 'jogando') return;
   estado.rodada++;
   
-  if (estado.rodada > 5) {
-    finalizar('VITÓRIA COLETIVA', 'Vocês sobreviveram ao OASIS!');
-    return;
-  }
+  if (estado.rodada > 5) { finalizar('VITÓRIA COLETIVA', 'Vocês sobreviveram ao OASIS!'); return; }
 
   estado.perguntaAtual = PERGUNTAS[Math.floor(Math.random() * PERGUNTAS.length)];
   io.emit('novaRodada', estado.perguntaAtual);
@@ -70,11 +64,7 @@ function iniciarRodada() {
 
   setTimeout(() => {
     if (estado.fase === 'jogando' && estado.perguntaAtual) {
-      io.emit('resultadoRodada', { 
-        vencedor: null, 
-        respostaCorreta: estado.perguntaAtual.c, 
-        mensagem: "Tempo esgotado! Ninguém acertou." 
-      });
+      io.emit('resultadoRodada', { vencedor: null, respostaCorreta: estado.perguntaAtual.c, mensagem: "Tempo esgotado!" });
       estado.energia = Math.max(0, estado.energia - 10);
       estado.perguntaAtual = null;
       enviarEstado();
@@ -91,63 +81,46 @@ function finalizar(titulo, mensagem) {
 }
 
 io.on('connection', (socket) => {
-  // 1. CADASTRAR
-  socket.on('cadastrar', ({ usuario, senha }) => {
-    usuario = usuario.trim().toLowerCase();
-    if (!usuario || !senha) return socket.emit('erroLogin', 'Preencha todos os campos.');
-    if (contas[usuario]) return socket.emit('erroLogin', 'Este usuário já existe.');
-
-    contas[usuario] = { senha: senha, avatar: 'parzival', pontosTotais: 0 };
-    salvarContas();
-    socket.emit('loginSucesso', { usuario, avatar: contas[usuario].avatar });
-  });
-
-  // 2. LOGAR
+  // 1. LOGIN
   socket.on('login', ({ usuario, senha }) => {
     usuario = usuario.trim().toLowerCase();
     if (!contas[usuario]) return socket.emit('erroLogin', 'Usuário não encontrado.');
     if (contas[usuario].senha !== senha) return socket.emit('erroLogin', 'Senha incorreta.');
-
-    socket.emit('loginSucesso', { usuario, avatar: contas[usuario].avatar });
+    
+    socket.emit('loginSucesso', { usuario, avatar: contas[usuario].avatar || 'parzival' });
   });
 
-  // 3. ENTRAR NA SALA DE JOGO (Após o Login)
-  socket.on('entrarSala', ({ usuario, avatarId }) => {
-    if (Object.keys(estado.jogadores).length >= MAX_JOGADORES) {
-      return socket.emit('erro', 'A sala está cheia (máx 5).');
-    }
-    if (estado.fase === 'jogando') {
-      return socket.emit('erro', 'Partida em andamento.');
-    }
+  // 2. CRIAR CONTA
+  socket.on('cadastrar', ({ usuario, senha }) => {
+    usuario = usuario.trim().toLowerCase();
+    if (!usuario || !senha) return socket.emit('erroCadastro', 'Preencha todos os campos.');
+    if (contas[usuario]) return socket.emit('erroCadastro', 'Este usuário já existe.');
 
-    // Salva o avatar escolhido na conta do jogador
-    if (contas[usuario]) {
-      contas[usuario].avatar = avatarId;
-      salvarContas();
-    }
+    contas[usuario] = { senha: senha, avatar: 'parzival', pontosTotais: 0 };
+    salvarContas();
+    socket.emit('cadastroSucesso');
+  });
+
+  // 3. ENTRAR NA SALA (Após Login)
+  socket.on('entrarSala', ({ usuario, avatarId }) => {
+    if (Object.keys(estado.jogadores).length >= MAX_JOGADORES) return socket.emit('erro', 'Sala cheia (máx 5).');
+    if (estado.fase === 'jogando') return socket.emit('erro', 'Partida em andamento.');
+
+    if (contas[usuario]) { contas[usuario].avatar = avatarId; salvarContas(); }
 
     estado.jogadores[socket.id] = {
-      id: socket.id,
-      nome: usuario,
-      avatarInfo: AVATARES[avatarId] || AVATARES.parzival,
-      pontos: 0
+      id: socket.id, nome: usuario, avatarInfo: AVATARES[avatarId] || AVATARES.parzival, pontos: 0
     };
 
-    socket.emit('bemVindo', { id: socket.id, usuario });
+    socket.emit('bemVindo', { id: socket.id });
     enviarEstado();
   });
 
   socket.on('iniciarJogo', () => {
-    if (Object.keys(estado.jogadores).length < MIN_JOGADORES) {
-      return socket.emit('erro', 'Precisa de pelo menos 2 jogadores.');
-    }
+    if (Object.keys(estado.jogadores).length < MIN_JOGADORES) return socket.emit('erro', 'Precisa de pelo menos 2 jogadores.');
     if (estado.fase === 'jogando') return;
-
-    estado.fase = 'jogando';
-    estado.energia = 100;
-    estado.rodada = 0;
+    estado.fase = 'jogando'; estado.energia = 100; estado.rodada = 0;
     Object.values(estado.jogadores).forEach(j => j.pontos = 0);
-
     enviarEstado();
     setTimeout(iniciarRodada, 1000);
   });
@@ -155,21 +128,13 @@ io.on('connection', (socket) => {
   socket.on('responder', ({ opcao }) => {
     if (estado.fase !== 'jogando' || !estado.perguntaAtual) return;
     const jogador = estado.jogadores[socket.id];
-    
     if (opcao === estado.perguntaAtual.c) {
       jogador.pontos += 15;
-      io.emit('resultadoRodada', {
-        vencedor: jogador.nome,
-        respostaCorreta: estado.perguntaAtual.c,
-        mensagem: `🏆 ${jogador.nome} acertou primeiro! +15 pts`
-      });
-      estado.perguntaAtual = null;
-      enviarEstado();
-      setTimeout(iniciarRodada, 4000);
+      io.emit('resultadoRodada', { vencedor: jogador.nome, respostaCorreta: estado.perguntaAtual.c, mensagem: `🏆 ${jogador.nome} acertou primeiro! +15 pts` });
+      estado.perguntaAtual = null; enviarEstado(); setTimeout(iniciarRodada, 4000);
     } else {
       estado.energia = Math.max(0, estado.energia - 5);
-      socket.emit('erro', 'Resposta errada! -5% energia.');
-      enviarEstado();
+      socket.emit('erro', 'Errou! -5% energia.'); enviarEstado();
     }
   });
 
