@@ -2,7 +2,6 @@ const socket = io();
 let meuId = null;
 let estadoAtual = null;
 let timerInterval = null;
-let perguntaAtual = null;
 let jaRespondi = false;
 let inicioPergunta = 0;
 let meuAvatarId = 'parzival';
@@ -34,12 +33,30 @@ montarAvatares();
 btnEntrar.addEventListener('click', () => {
   const nome = inputNome.value.trim();
   if (!nome) { mostrarAvisoEntrada('Digite um nome!'); return; }
+  
+  // Desabilita o botão para não clicar duas vezes e travar
+  btnEntrar.disabled = true;
+  btnEntrar.textContent = 'Conectando...';
+  
   socket.emit('entrar', { nome, avatarId: meuAvatarId });
 });
 inputNome.addEventListener('keypress', (e) => { if (e.key === 'Enter') btnEntrar.click(); });
-function mostrarAvisoEntrada(msg) { avisoEntrada.textContent = '⚠️ ' + msg; avisoEntrada.classList.remove('escondido'); setTimeout(() => avisoEntrada.classList.add('escondido'), 3500); }
+function mostrarAvisoEntrada(msg) { 
+  avisoEntrada.textContent = '⚠️ ' + msg; 
+  avisoEntrada.classList.remove('escondido'); 
+  btnEntrar.disabled = false; 
+  btnEntrar.textContent = '▶ Entrar no OASIS';
+  setTimeout(() => avisoEntrada.classList.add('escondido'), 3500); 
+}
 
-socket.on('bemVindo', ({ id }) => { meuId = id; telaEntrada.classList.remove('ativa'); telaJogo.classList.add('ativa'); });
+socket.on('bemVindo', ({ id }) => { 
+  meuId = id; 
+  // Força a troca das telas removendo e adicionando as classes corretamente
+  telaEntrada.classList.add('escondido');
+  telaEntrada.classList.remove('ativa');
+  telaJogo.classList.remove('escondido');
+  telaJogo.classList.add('ativa');
+});
 
 socket.on('estadoJogo', (estado) => {
   estadoAtual = estado;
@@ -51,7 +68,6 @@ socket.on('estadoJogo', (estado) => {
   if (estado.fase === 'lobby' || estado.fase === 'finalizado') {
     areaLobby.classList.remove('escondido'); areaDesafio.classList.add('escondido');
     lobbyInfo.innerHTML = `A sala tem <strong>${estado.jogadores.length} / ${estado.maxJogadores} jogadores</strong>.`;
-    // Só deixa iniciar se tiver 2 ou mais
     btnIniciar.disabled = estado.jogadores.length < 2;
   } else if (estado.fase === 'jogando') { 
     areaLobby.classList.add('escondido'); 
@@ -83,7 +99,7 @@ btnIniciar.addEventListener('click', () => socket.emit('iniciarJogo'));
 btnReiniciar.addEventListener('click', () => socket.emit('reiniciar'));
 
 socket.on('novaRodada', (data) => {
-  perguntaAtual = data; jaRespondi = false;
+  jaRespondi = false;
   areaLobby.classList.add('escondido'); areaDesafio.classList.remove('escondido');
   mensagemRodada.textContent = ''; explicacaoCoop.classList.add('escondido'); explicacaoCoop.innerHTML = '';
   desafioTipo.textContent = data.tipo === 'individual' ? '🟣 DESAFIO INDIVIDUAL' : '🟢 DESAFIO COOPERATIVO';
