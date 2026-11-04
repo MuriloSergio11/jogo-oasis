@@ -1,6 +1,8 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
@@ -8,8 +10,26 @@ const io = new Server(server, { cors: { origin: '*' } });
 
 app.use(express.static('public'));
 
+// --- BANCO DE DADOS SIMPLES (JOGADORES) ---
+const DB_FILE = path.join(__dirname, 'jogadores.json');
+let contas = {};
+
+// Carrega as contas salvas
+if (fs.existsSync(DB_FILE)) {
+  try {
+    contas = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+  } catch (e) {
+    contas = {};
+  }
+}
+
+function salvarContas() {
+  fs.writeFileSync(DB_FILE, JSON.stringify(contas, null, 2));
+}
+
+// --- ESTADO DO JOGO ---
 const estado = {
-  jogadores: {},
+  jogadores: {}, // Jogadores ativos na sala atual
   fase: 'lobby',
   energia: 100,
   rodada: 0,
@@ -18,14 +38,6 @@ const estado = {
 
 const MAX_JOGADORES = 5;
 const MIN_JOGADORES = 2;
-
-const AVATARES = {
-  parzival: { emoji: '🛡️', nome: 'Parzival' }, 
-  art3mis: { emoji: '⚡', nome: 'Art3mis' },
-  curator: { emoji: '🧠', nome: 'Curator' }, 
-  irok: { emoji: '💥', nome: 'I-R0k' }, 
-  og: { emoji: '🔮', nome: 'Og' }
-};
 
 const PERGUNTAS = [
   { p: "🧩 ENIGMA: Se 3 Gunters resolvem 3 enigmas em 3 minutos, quanto tempo 9 Gunters levam para 9 enigmas?", o: ["9 minutos", "3 minutos", "27 minutos", "1 minuto"], c: 1 },
@@ -79,27 +91,49 @@ function finalizar(titulo, mensagem) {
 }
 
 io.on('connection', (socket) => {
-  console.log('Jogador conectado:', socket.id);
+  // 1. CADASTRAR
+  socket.on('cadastrar', ({ usuario, senha }) => {
+    usuario = usuario.trim().toLowerCase();
+    if (!usuario || !senha) return socket.emit('erroLogin', 'Preencha todos os campos.');
+    if (contas[usuario]) return socket.emit('erroLogin', 'Este usuário já existe.');
 
-  socket.on('entrar', ({ nome, avatarId }) => {
+    contas[usuario] = { senha: senha, avatar: 'parzival', pontosTotais: 0 };
+    salvarContas();
+    socket.emit('loginSucesso', { usuario, avatar: contas[usuario].avatar });
+  });
+
+  // 2. LOGAR
+  socket.on('login', ({ usuario, senha }) => {
+    usuario = usuario.trim().toLowerCase();
+    if (!contas[usuario]) return socket.emit('erroLogin', 'Usuário não encontrado.');
+    if (contas[usuario].senha !== senha) return socket.emit('erroLogin', 'Senha incorreta.');
+
+    socket.emit('loginSucesso', { usuario, avatar: contas[usuario].avatar });
+  });
+
+  // 3. ENTRAR NA SALA DE JOGO (Após o Login)
+  socket.on('entrarSala', ({ usuario, avatarId }) => {
     if (Object.keys(estado.jogadores).length >= MAX_JOGADORES) {
-      return socket.emit('erro', 'A sala está cheia.');
+      return socket.emit('erro', 'A sala está cheia (máx 5).');
     }
     if (estado.fase === 'jogando') {
       return socket.emit('erro', 'Partida em andamento.');
     }
 
+    // Salva o avatar escolhido na conta do jogador
+    if (contas[usuario]) {
+      contas[usuario].avatar = avatarId;
+      salvarContas();
+    }
+
     estado.jogadores[socket.id] = {
       id: socket.id,
-      nome: nome,
+      nome: usuario,
       avatarInfo: AVATARES[avatarId] || AVATARES.parzival,
       pontos: 0
     };
 
-    // A CORREÇÃO FATAL AQUI: Envia o ID de volta para o navegador destravar a tela
-    socket.emit('bemVindo', { id: socket.id });
-    
-    // Atualiza a lista de jogadores para todos
+    socket.emit('bemVindo', { id: socket.id, usuario });
     enviarEstado();
   });
 
