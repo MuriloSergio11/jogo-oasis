@@ -1,101 +1,119 @@
+// 1. Verifica se a internet carregou o Socket.IO
+if (typeof io === 'undefined') {
+  document.body.innerHTML = '<h1 style="color:white; text-align:center; margin-top:20%; font-family:sans-serif;">Erro de Conexão.<br>Recarregue a página.</h1>';
+  throw new Error('Socket.IO falhou');
+}
+
 const socket = io();
 let meuId = null;
-let estadoAtual = { jogadores: [], fase: 'lobby', energia: 100, rodada: 0, maxJogadores: 5 };
-let timerInterval = null;
 let jaRespondi = false;
-let inicioPergunta = 0;
-let meuAvatarId = 'parzival';
+let avatarSelecionado = 'parzival';
 
 const AVATARES = {
-  parzival: { emoji: '🛡️', nome: 'Parzival', classe: 'Guardião' },
-  art3mis: { emoji: '⚡', nome: 'Art3mis', classe: 'Velocista' },
-  curator: { emoji: '🧠', nome: 'Curator', classe: 'Sábio' },
-  irok: { emoji: '💥', nome: 'I-R0k', classe: 'Caótico' },
-  og: { emoji: '🔮', nome: 'Og', classe: 'Oráculo' }
+  parzival: { emoji: '🛡️', nome: 'Parzival' }, 
+  art3mis: { emoji: '⚡', nome: 'Art3mis' },
+  curator: { emoji: '🧠', nome: 'Curator' }, 
+  irok: { emoji: '💥', nome: 'I-R0k' }, 
+  og: { emoji: '🔮', nome: 'Og' }
 };
 
-const $ = (id) => document.getElementById(id);
-const telaEntrada = $('telaEntrada'), telaJogo = $('telaJogo'), gridAvatares = $('gridAvatares'), inputNome = $('inputNome'), btnEntrar = $('btnEntrar'), listaJogadores = $('listaJogadores'), areaLobby = $('areaLobby'), areaDesafio = $('areaDesafio'), btnIniciar = $('btnIniciar'), desafioPergunta = $('desafioPergunta'), opcoesDesafio = $('opcoesDesafio'), energiaFill = $('energiaFill'), energiaValor = $('energiaValor'), toast = $('toast'), lobbyInfo = $('lobbyInfo'), modalFim = $('modalFim'), mensagemRodada = $('mensagemRodada');
+// 2. Função segura para pegar elementos
+function el(id) { return document.getElementById(id); }
 
-function montarAvatares() {
-  gridAvatares.innerHTML = '';
+// 3. Monta a tela de entrada (Só roda se achar a div)
+const grid = el('gridAvatares');
+if (grid) {
+  grid.innerHTML = '';
   Object.entries(AVATARES).forEach(([id, info]) => {
     const div = document.createElement('div');
-    div.className = 'avatar-card' + (id === meuAvatarId ? ' selecionado' : '');
-    div.innerHTML = `<span class="avatar-emoji">${info.emoji}</span><div class="avatar-nome">${info.nome}</div><div class="avatar-classe">${info.classe}</div>`;
+    div.className = `avatar-card ${id === avatarSelecionado ? 'selecionado' : ''}`;
+    div.innerHTML = `<div class="avatar-emoji">${info.emoji}</div><div class="avatar-nome">${info.nome}</div>`;
     div.onclick = () => {
       document.querySelectorAll('.avatar-card').forEach(c => c.classList.remove('selecionado'));
       div.classList.add('selecionado');
-      meuAvatarId = id;
+      avatarSelecionado = id;
     };
-    gridAvatares.appendChild(div);
+    grid.appendChild(div);
   });
 }
-montarAvatares();
 
-btnEntrar.onclick = () => {
-  const nome = inputNome.value.trim();
-  if (!nome) return alert('Digite um nome!');
-  socket.emit('entrar', { nome, avatarId: meuAvatarId });
-};
+// 4. Botão de Entrar
+const btnEntrar = el('btnEntrar');
+if (btnEntrar) {
+  btnEntrar.onclick = () => {
+    const nome = el('inputNome').value.trim();
+    if (!nome) return alert('Digite um nome!');
+    socket.emit('entrar', { nome, avatarId: avatarSelecionado });
+  };
+}
 
-socket.on('bemVindo', ({ id }) => {
-  meuId = id;
-  telaEntrada.classList.add('escondido');
-  telaJogo.classList.remove('escondido');
+// 5. Recebe o sinal verde do servidor e troca a tela
+socket.on('bemVindo', (data) => {
+  meuId = data.id;
+  if(el('telaEntrada')) el('telaEntrada').classList.add('escondido');
+  if(el('telaJogo')) el('telaJogo').classList.remove('escondido');
 });
 
+// 6. Atualiza o Placar e a Energia na tela
 socket.on('estadoJogo', (estado) => {
-  estadoAtual = estado;
-  listaJogadores.innerHTML = '';
-  [...estado.jogadores].sort((a,b) => b.pontos - a.pontos).forEach(j => {
-    const li = document.createElement('li');
-    li.innerHTML = `<span>${j.avatarInfo.emoji}</span> <strong>${j.nome}</strong> <span style="margin-left:auto">${j.pontos} pts</span>`;
-    listaJogadores.appendChild(li);
-  });
+  const lista = el('listaJogadores');
+  if (lista) {
+    lista.innerHTML = '';
+    [...estado.jogadores].sort((a,b) => b.pontos - a.pontos).forEach(j => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span>${j.avatarInfo?.emoji || '👤'}</span> <strong>${j.nome}</strong> <span style="margin-left:auto">${j.pontos} pts</span>`;
+      lista.appendChild(li);
+    });
+  }
 
-  energiaValor.textContent = estado.energia + '%';
-  energiaFill.style.width = estado.energia + '%';
+  if(el('energiaValor')) el('energiaValor').textContent = estado.energia + '%';
+  if(el('energiaFill')) el('energiaFill').style.width = estado.energia + '%';
 
+  // Troca a tela do centro (Lobby x Pergunta)
   if (estado.fase === 'lobby' || estado.fase === 'finalizado') {
-    areaLobby.classList.remove('escondido');
-    areaDesafio.classList.add('escondido');
-    lobbyInfo.innerHTML = `Jogadores: <strong>${estado.jogadores.length} / 5</strong>`;
-    btnIniciar.disabled = estado.jogadores.length < 2;
+    if(el('areaLobby')) el('areaLobby').classList.remove('escondido');
+    if(el('areaDesafio')) el('areaDesafio').classList.add('escondido');
+    if(el('lobbyInfo')) el('lobbyInfo').innerHTML = `Jogadores: <strong>${estado.jogadores.length} / 5</strong>`;
+    if(el('btnIniciar')) el('btnIniciar').disabled = estado.jogadores.length < 2;
   } else if (estado.fase === 'jogando') {
-    areaLobby.classList.add('escondido');
-    areaDesafio.classList.remove('escondido');
+    if(el('areaLobby')) el('areaLobby').classList.add('escondido');
+    if(el('areaDesafio')) el('areaDesafio').classList.remove('escondido');
   }
 });
 
-btnIniciar.onclick = () => socket.emit('iniciarJogo');
+// 7. Botão Iniciar Jogo
+const btnIniciar = el('btnIniciar');
+if (btnIniciar) btnIniciar.onclick = () => socket.emit('iniciarJogo');
 
+// 8. Mostra as Perguntas
 socket.on('novaRodada', (data) => {
   jaRespondi = false;
-  mensagemRodada.textContent = '';
-  desafioPergunta.textContent = data.pergunta;
-  opcoesDesafio.innerHTML = '';
-  inicioPergunta = Date.now();
-
-  data.opcoes.forEach((opcao, index) => {
-    const btn = document.createElement('button');
-    btn.className = 'opcao';
-    btn.innerHTML = `<span class="letra">${String.fromCharCode(65 + index)}</span> ${opcao}`;
-    btn.onclick = () => {
-      if (jaRespondi) return;
-      jaRespondi = true;
-      document.querySelectorAll('.opcao').forEach(b => b.disabled = true);
-      btn.style.borderColor = 'var(--neon-cyan)';
-      socket.emit('responder', { opcao: index, tempoMs: Date.now() - inicioPergunta });
-    };
-    opcoesDesafio.appendChild(btn);
-  });
+  if(el('mensagemRodada')) el('mensagemRodada').textContent = '';
+  if(el('desafioPergunta')) el('desafioPergunta').textContent = data.pergunta;
+  
+  const opcoesDiv = el('opcoesDesafio');
+  if (opcoesDiv) {
+    opcoesDiv.innerHTML = '';
+    data.opcoes.forEach((texto, index) => {
+      const btn = document.createElement('button');
+      btn.className = 'opcao';
+      btn.innerHTML = `<span class="letra">${String.fromCharCode(65 + index)}</span> ${texto}`;
+      btn.onclick = () => {
+        if (jaRespondi) return;
+        jaRespondi = true;
+        document.querySelectorAll('.opcao').forEach(b => b.disabled = true);
+        socket.emit('responder', { opcao: index, tempoMs: 1000 });
+      };
+      opcoesDiv.appendChild(btn);
+    });
+  }
 });
 
+// 9. Mostra o Resultado (Certo ou Errado)
 socket.on('resultadoRodada', (res) => {
-  mensagemRodada.textContent = res.mensagem;
+  if(el('mensagemRodada')) el('mensagemRodada').textContent = res.mensagem;
   const botoes = document.querySelectorAll('.opcao');
-  if (botoes.length > 0) {
+  if (botoes.length > 0 && res.respostaCorreta !== undefined) {
     botoes.forEach((b, i) => {
       b.disabled = true;
       if (i === res.respostaCorreta) b.style.borderColor = 'var(--neon-green)';
@@ -103,32 +121,42 @@ socket.on('resultadoRodada', (res) => {
   }
 });
 
+// 10. Fim de Jogo
 socket.on('fimDeJogo', (data) => {
-  $('modalEmoji').textContent = data.emoji;
-  $('modalTitulo').textContent = data.titulo;
-  $('modalMensagem').textContent = data.mensagem;
-  modalFim.classList.remove('escondido');
+  if(el('modalTitulo')) el('modalTitulo').textContent = data.titulo;
+  if(el('modalMensagem')) el('modalMensagem').textContent = data.mensagem;
+  if(el('modalFim')) el('modalFim').classList.remove('escondido');
 });
 
+// 11. Avisos de Erro
 socket.on('erro', (msg) => {
-  toast.textContent = msg;
-  toast.classList.remove('escondido');
-  setTimeout(() => toast.classList.add('escondido'), 3000);
+  const toast = el('toast');
+  if (toast) {
+    toast.textContent = msg;
+    toast.classList.remove('escondido');
+    setTimeout(() => toast.classList.add('escondido'), 3000);
+  }
 });
 
-// Chat
-document.getElementById('btnEnviarChat').onclick = () => {
-  const input = document.getElementById('chatInput');
-  if (input.value.trim()) {
-    socket.emit('chat', { texto: input.value.trim() });
-    input.value = '';
-  }
-};
+// 12. Chat
+const btnEnviarChat = el('btnEnviarChat');
+if (btnEnviarChat) {
+  btnEnviarChat.onclick = () => {
+    const input = el('chatInput');
+    if (input && input.value.trim()) {
+      socket.emit('chat', { texto: input.value.trim() });
+      input.value = '';
+    }
+  };
+}
 
 socket.on('chatMsg', (data) => {
-  const div = document.createElement('div');
-  div.className = 'chat-msg';
-  div.innerHTML = `<span class="chat-nome">${data.avatar} ${data.nome}:</span> ${data.texto}`;
-  document.getElementById('chatMensagens').appendChild(div);
-  document.getElementById('chatMensagens').scrollTop = 9999;
+  const chatBox = el('chatMensagens');
+  if (chatBox) {
+    const div = document.createElement('div');
+    div.className = 'chat-msg';
+    div.innerHTML = `<span class="chat-nome">${data.avatar} ${data.nome}:</span> ${data.texto}`;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
 });
