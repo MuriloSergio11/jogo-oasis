@@ -1,0 +1,16 @@
+{
+  "name": "oasis-ultima-esperanca",
+  "version": "2.0.0",
+  "description": "Jogo multiplayer inspirado em Jogador Nº 1",
+  "main": "servidor.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node servidor.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  }
+}
