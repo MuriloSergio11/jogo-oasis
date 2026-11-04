@@ -1,5 +1,5 @@
 /* ============================================================
-   RESET E VARIÁVEIS
+   RESET E VARIÁVEIS GLOBAIS
 ============================================================ */
 * {
   margin: 0;
@@ -12,6 +12,7 @@
   --neon-green: #00ff66;
   --neon-red: #ff003c;
   --neon-purple: #9d00ff;
+  --neon-yellow: #ffcc00;
   --bg-dark: #05030f;
   --bg-panel: rgba(15, 10, 46, 0.85);
   --text-main: #e6f1ff;
@@ -37,7 +38,7 @@ body {
 }
 
 /* ============================================================
-   FUNDO ANIMADO
+   FUNDO ANIMADO (ESTRELAS E ORBES)
 ============================================================ */
 .stars {
   position: fixed;
@@ -45,16 +46,17 @@ body {
   background-image: 
     radial-gradient(1px 1px at 15% 25%, white, transparent),
     radial-gradient(1px 1px at 45% 65%, white, transparent),
-    radial-gradient(2px 2px at 75% 35%, var(--neon-cyan), transparent);
-  background-size: 250px 250px, 350px 350px, 450px 450px;
+    radial-gradient(2px 2px at 75% 35%, var(--neon-cyan), transparent),
+    radial-gradient(1px 1px at 85% 85%, white, transparent);
+  background-size: 250px 250px, 350px 350px, 450px 450px, 300px 300px;
   animation: pan-stars 120s linear infinite;
   z-index: -2;
-  opacity: 0.4;
+  opacity: 0.5;
 }
 
 @keyframes pan-stars {
-  from { background-position: 0 0, 0 0, 0 0; }
-  to { background-position: -250px -250px, -350px -350px, -450px -450px; }
+  from { background-position: 0 0, 0 0, 0 0, 0 0; }
+  to { background-position: -250px -250px, -350px -350px, -450px -450px, -300px -300px; }
 }
 
 .gradient-orb {
@@ -64,22 +66,29 @@ body {
   opacity: 0.4;
   z-index: -1;
   pointer-events: none;
+  animation: pulse-orb 18s ease-in-out infinite alternate;
 }
 
 .orb1 {
-  width: 500px;
-  height: 500px;
+  width: 550px;
+  height: 550px;
   background: var(--neon-purple);
-  top: -150px;
-  left: -100px;
+  top: -200px;
+  left: -150px;
 }
 
 .orb2 {
-  width: 600px;
-  height: 600px;
+  width: 650px;
+  height: 650px;
   background: var(--neon-cyan);
-  bottom: -200px;
-  right: -200px;
+  bottom: -250px;
+  right: -150px;
+  animation-delay: -9s;
+}
+
+@keyframes pulse-orb {
+  0% { transform: scale(1) translate(0, 0); opacity: 0.3; }
+  100% { transform: scale(1.15) translate(60px, 60px); opacity: 0.5; }
 }
 
 /* ============================================================
@@ -90,6 +99,13 @@ body {
   margin-bottom: 40px;
   position: relative;
   z-index: 10;
+}
+
+.titulo-jogo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
 .titulo-oasis {
@@ -103,6 +119,7 @@ body {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: gradient-text 5s linear infinite;
+  filter: drop-shadow(0 0 25px rgba(0, 243, 255, 0.6));
 }
 
 .titulo-sub {
@@ -118,7 +135,7 @@ body {
 }
 
 /* ============================================================
-   CONTROLE DE TELAS
+   CONTROLE DE TELAS E ANIMAÇÕES
 ============================================================ */
 .tela {
   display: none;
@@ -131,7 +148,7 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 60vh;
-  animation: fade-in 0.4s ease;
+  animation: fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .escondido {
@@ -139,42 +156,53 @@ body {
 }
 
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(15px); }
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 /* ============================================================
-   CARD DE LOGIN/CADASTRO
+   CARD DE LOGIN / CADASTRO / AVATARES
 ============================================================ */
 .card-entrada {
   background: var(--bg-panel);
   border: 1px solid var(--border-glass);
-  border-radius: 20px;
+  border-radius: 24px;
   padding: 45px;
-  max-width: 500px;
+  max-width: 550px;
   width: 100%;
-  backdrop-filter: blur(15px);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-entrada::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
 }
 
 .card-entrada h2 {
   font-family: 'Orbitron', sans-serif;
   color: var(--neon-cyan);
   text-align: center;
-  margin-bottom: 10px;
-  font-size: 1.5rem;
+  margin-bottom: 20px;
+  font-size: 1.6rem;
   letter-spacing: 0.1em;
 }
 
 .lore {
   text-align: center;
   color: var(--text-muted);
-  margin-bottom: 30px;
+  margin-bottom: 25px;
   font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 .campo {
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .campo label {
@@ -188,32 +216,33 @@ body {
 }
 
 /* ============================================================
-   CAMPOS DE TEXTO (CORRIGIDOS)
+   CAMPOS DE TEXTO ESCUROS
 ============================================================ */
 input[type="text"],
 input[type="password"],
 input[type="email"] {
   width: 100%;
-  padding: 14px 18px;
+  padding: 16px 20px;
   background-color: #0a0618 !important;
-  border: 1px solid rgba(0, 243, 255, 0.2);
-  border-radius: 10px;
+  border: 1px solid rgba(0, 243, 255, 0.15);
+  border-radius: 12px;
   color: #fff !important;
   font-size: 1.1rem;
   font-family: 'Rajdhani', sans-serif;
   outline: none;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
 input[type="text"]:focus,
 input[type="password"]:focus {
   border-color: var(--neon-cyan);
   background-color: #0a0618 !important;
-  box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.3), inset 0 0 10px rgba(0, 243, 255, 0.1);
 }
 
 input::placeholder {
-  color: #5a6b84;
+  color: rgba(139, 155, 180, 0.5);
   font-style: italic;
 }
 
@@ -225,21 +254,28 @@ input::placeholder {
   padding: 16px;
   background: transparent;
   border: 2px solid var(--neon-cyan);
-  border-radius: 10px;
+  border-radius: 12px;
   color: var(--neon-cyan);
   font-family: 'Orbitron', sans-serif;
   font-weight: 900;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s;
-  margin-top: 10px;
+  margin-top: 12px;
   text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.btn-glow:hover {
+.btn-glow:hover:not(:disabled) {
   background: var(--neon-cyan);
   color: #000;
-  box-shadow: 0 0 20px var(--neon-cyan);
+  box-shadow: 0 0 30px rgba(0, 243, 255, 0.6);
+}
+
+.btn-glow:disabled {
+  border-color: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.15);
+  cursor: not-allowed;
 }
 
 .btn-secundario {
@@ -247,7 +283,7 @@ input::placeholder {
   padding: 16px;
   background: transparent;
   border: 2px solid rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
+  border-radius: 12px;
   color: #fff;
   font-family: 'Orbitron', sans-serif;
   font-weight: 900;
@@ -256,6 +292,7 @@ input::placeholder {
   transition: all 0.3s;
   margin-top: 12px;
   text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .btn-secundario:hover {
@@ -268,39 +305,41 @@ input::placeholder {
 ============================================================ */
 .grid-avatares {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(85px, 1fr));
+  gap: 12px;
 }
 
 .avatar-card {
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
   padding: 15px 10px;
   cursor: pointer;
   text-align: center;
-  transition: all 0.2s;
+  transition: all 0.25s;
 }
 
 .avatar-card:hover {
   border-color: var(--neon-cyan);
+  transform: translateY(-3px);
 }
 
 .avatar-card.selecionado {
   border-color: var(--neon-cyan);
-  background: rgba(0, 243, 255, 0.15);
-  box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+  background: rgba(0, 243, 255, 0.12);
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
 }
 
 .avatar-emoji {
-  font-size: 2rem;
+  font-size: 2.2rem;
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
 }
 
 .avatar-nome {
   font-size: 0.85rem;
   font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
 /* ============================================================
@@ -311,19 +350,22 @@ input::placeholder {
   margin: 0 auto 25px;
   background: var(--bg-panel);
   border: 1px solid var(--border-glass);
-  border-radius: 15px;
+  border-radius: 16px;
   padding: 20px 30px;
   backdrop-filter: blur(15px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
 .energia-label {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-family: 'Orbitron', sans-serif;
   color: var(--neon-cyan);
   font-weight: 700;
-  margin-bottom: 10px;
-  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  letter-spacing: 0.15em;
 }
 
 .energia-valor {
@@ -334,17 +376,19 @@ input::placeholder {
 
 .barra-energia {
   height: 20px;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
   border-radius: 10px;
   overflow: hidden;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
 }
 
 .energia-fill {
   height: 100%;
   width: 100%;
   background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan));
+  border-radius: 10px;
+  transition: width 0.5s ease;
   box-shadow: 0 0 20px var(--neon-green);
-  transition: width 0.5s;
 }
 
 /* ============================================================
@@ -365,16 +409,20 @@ input::placeholder {
   .painel-central { order: 1; }
 }
 
-.painel-placar, .painel-central, .painel-chat {
+.painel-placar,
+.painel-central,
+.painel-chat {
   background: var(--bg-panel);
   border: 1px solid var(--border-glass);
-  border-radius: 15px;
+  border-radius: 16px;
   padding: 25px;
   min-height: 450px;
   backdrop-filter: blur(15px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-.painel-placar h3, .painel-chat h3 {
+.painel-placar h3,
+.painel-chat h3 {
   font-family: 'Orbitron', sans-serif;
   color: var(--neon-cyan);
   border-bottom: 1px solid rgba(0, 243, 255, 0.2);
@@ -384,22 +432,26 @@ input::placeholder {
   letter-spacing: 0.15em;
 }
 
+/* ============================================================
+   PLACAR
+============================================================ */
 .lista-jogadores {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .lista-jogadores li {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   background: rgba(255, 255, 255, 0.03);
-  padding: 12px;
+  padding: 14px;
   border-radius: 10px;
-  border-left: 3px solid var(--neon-purple);
-  font-size: 1.05rem;
+  border-left: 4px solid var(--neon-purple);
+  font-size: 1.1rem;
+  transition: all 0.3s;
 }
 
 .lista-jogadores li.eu {
@@ -429,13 +481,13 @@ input::placeholder {
 
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-12px); }
 }
 
 .area-lobby h2 {
   font-family: 'Orbitron', sans-serif;
   color: #fff;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   font-size: 1.5rem;
 }
 
@@ -453,10 +505,11 @@ input::placeholder {
   font-size: 1.25rem;
   line-height: 1.6;
   padding: 25px;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.5);
   border-left: 4px solid var(--neon-cyan);
   border-radius: 10px;
   margin-bottom: 25px;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
 }
 
 .opcoes {
@@ -467,8 +520,8 @@ input::placeholder {
 
 .opcao {
   padding: 16px 20px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   color: #fff;
   font-size: 1.05rem;
@@ -484,7 +537,7 @@ input::placeholder {
 .opcao:hover:not(:disabled) {
   border-color: var(--neon-cyan);
   background: rgba(0, 243, 255, 0.1);
-  transform: translateX(5px);
+  transform: translateX(6px);
 }
 
 .opcao .letra {
@@ -497,8 +550,9 @@ input::placeholder {
   height: 32px;
   border-radius: 8px;
   font-weight: 900;
-  margin-right: 15px;
+  font-family: 'Orbitron', sans-serif;
   flex-shrink: 0;
+  margin-right: 15px;
 }
 
 .mensagem-rodada {
@@ -507,6 +561,8 @@ input::placeholder {
   font-weight: 700;
   text-align: center;
   color: var(--neon-cyan);
+  padding: 10px;
+  border-radius: 8px;
 }
 
 /* ============================================================
@@ -525,10 +581,11 @@ input::placeholder {
   flex-direction: column;
   gap: 10px;
   margin-bottom: 15px;
-  padding-right: 5px;
+  padding-right: 8px;
 }
 
 .chat-mensagens::-webkit-scrollbar { width: 6px; }
+.chat-mensagens::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 3px; }
 .chat-mensagens::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 3px; }
 
 .chat-msg {
@@ -536,15 +593,21 @@ input::placeholder {
   padding: 10px 14px;
   border-radius: 10px;
   font-size: 0.95rem;
+  animation: fade-in 0.2s;
+  line-height: 1.4;
+  word-wrap: break-word;
 }
 
 .chat-nome {
   font-weight: 700;
   color: var(--neon-cyan);
-  margin-right: 5px;
+  margin-right: 6px;
 }
 
-.chat-input { display: flex; gap: 10px; }
+.chat-input {
+  display: flex;
+  gap: 10px;
+}
 
 #chatInput {
   flex: 1;
@@ -555,9 +618,14 @@ input::placeholder {
   color: #fff;
   outline: none;
   font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  transition: all 0.3s;
 }
 
-#chatInput:focus { border-color: var(--neon-cyan); }
+#chatInput:focus {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+}
 
 #btnEnviarChat {
   padding: 12px 20px;
@@ -566,11 +634,17 @@ input::placeholder {
   border-radius: 10px;
   cursor: pointer;
   font-weight: 900;
+  font-size: 1rem;
   transition: all 0.2s;
 }
 
+#btnEnviarChat:hover {
+  filter: brightness(1.2);
+  box-shadow: 0 0 15px var(--neon-cyan);
+}
+
 /* ============================================================
-   MODAL E AVISOS
+   MODAL DE FIM DE JOGO E TOAST
 ============================================================ */
 .modal {
   position: fixed;
@@ -580,7 +654,7 @@ input::placeholder {
   justify-content: center;
   align-items: center;
   z-index: 100;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
 }
 
 .modal-content {
@@ -590,15 +664,29 @@ input::placeholder {
   padding: 50px;
   text-align: center;
   max-width: 500px;
+  width: 90%;
+  box-shadow: 0 0 60px rgba(0, 243, 255, 0.4);
+  animation: fade-in 0.5s;
 }
 
-.modal-emoji { font-size: 6rem; margin-bottom: 20px; }
+.modal-emoji {
+  font-size: 6rem;
+  margin-bottom: 20px;
+  animation: float 2.5s ease-in-out infinite;
+}
 
 #modalTitulo {
   font-family: 'Orbitron', sans-serif;
   color: var(--neon-cyan);
   margin-bottom: 15px;
   font-size: 2rem;
+  text-shadow: 0 0 20px var(--neon-cyan);
+}
+
+#modalMensagem {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: var(--text-muted);
 }
 
 .toast {
@@ -612,6 +700,9 @@ input::placeholder {
   font-weight: 800;
   border-radius: 10px;
   z-index: 200;
+  box-shadow: 0 10px 30px rgba(255, 0, 60, 0.4);
+  animation: fade-in 0.3s;
+  text-align: center;
 }
 
 .aviso {
