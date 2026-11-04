@@ -1,14 +1,14 @@
-// 1. Verifica se a internet carregou o Socket.IO
+// 1. Verifica se o Socket.IO carregou da internet
 if (typeof io === 'undefined') {
-  document.body.innerHTML = '<h1 style="color:white; text-align:center; margin-top:20%; font-family:sans-serif;">Erro de Conexão.<br>Recarregue a página.</h1>';
-  throw new Error('Socket.IO falhou');
+  document.body.innerHTML = '<h1 style="color:white; text-align:center; margin-top:20%;">Erro de conexão com o servidor.<br>Tente recarregar a página.</h1>';
+  throw new Error('Socket.IO falhou ao carregar');
 }
 
 const socket = io();
 let meuId = null;
-let jaRespondi = false;
 let avatarSelecionado = 'parzival';
 
+// Avatares
 const AVATARES = {
   parzival: { emoji: '🛡️', nome: 'Parzival' }, 
   art3mis: { emoji: '⚡', nome: 'Art3mis' },
@@ -17,16 +17,18 @@ const AVATARES = {
   og: { emoji: '🔮', nome: 'Og' }
 };
 
-// 2. Função segura para pegar elementos
-function el(id) { return document.getElementById(id); }
+// Função para pegar elementos sem dar erro
+function el(id) { 
+  return document.getElementById(id); 
+}
 
-// 3. Monta a tela de entrada (Só roda se achar a div)
+// 2. Monta os avatares na tela
 const grid = el('gridAvatares');
 if (grid) {
   grid.innerHTML = '';
   Object.entries(AVATARES).forEach(([id, info]) => {
     const div = document.createElement('div');
-    div.className = `avatar-card ${id === avatarSelecionado ? 'selecionado' : ''}`;
+    div.className = 'avatar-card' + (id === avatarSelecionado ? ' selecionado' : '');
     div.innerHTML = `<div class="avatar-emoji">${info.emoji}</div><div class="avatar-nome">${info.nome}</div>`;
     div.onclick = () => {
       document.querySelectorAll('.avatar-card').forEach(c => c.classList.remove('selecionado'));
@@ -35,26 +37,43 @@ if (grid) {
     };
     grid.appendChild(div);
   });
+} else {
+  console.error("Erro: O elemento gridAvatares não foi encontrado no HTML.");
 }
 
-// 4. Botão de Entrar
+// 3. Configura o botão de Entrar
 const btnEntrar = el('btnEntrar');
 if (btnEntrar) {
   btnEntrar.onclick = () => {
-    const nome = el('inputNome').value.trim();
+    const input = el('inputNome');
+    if (!input) return;
+    const nome = input.value.trim();
     if (!nome) return alert('Digite um nome!');
+    
+    btnEntrar.textContent = 'Conectando...';
+    btnEntrar.disabled = true;
     socket.emit('entrar', { nome, avatarId: avatarSelecionado });
   };
 }
 
-// 5. Recebe o sinal verde do servidor e troca a tela
+// 4. Recebe o sinal verde do servidor e MUDA A TELA
 socket.on('bemVindo', (data) => {
   meuId = data.id;
-  if(el('telaEntrada')) el('telaEntrada').classList.add('escondido');
-  if(el('telaJogo')) el('telaJogo').classList.remove('escondido');
+  
+  const telaEntrada = el('telaEntrada');
+  const telaJogo = el('telaJogo');
+  
+  if (telaEntrada) {
+    telaEntrada.classList.add('escondido');
+    telaEntrada.classList.remove('ativa');
+  }
+  if (telaJogo) {
+    telaJogo.classList.remove('escondido');
+    telaJogo.classList.add('ativa');
+  }
 });
 
-// 6. Atualiza o Placar e a Energia na tela
+// 5. Atualiza o Placar e a Barra de Energia
 socket.on('estadoJogo', (estado) => {
   const lista = el('listaJogadores');
   if (lista) {
@@ -69,11 +88,11 @@ socket.on('estadoJogo', (estado) => {
   if(el('energiaValor')) el('energiaValor').textContent = estado.energia + '%';
   if(el('energiaFill')) el('energiaFill').style.width = estado.energia + '%';
 
-  // Troca a tela do centro (Lobby x Pergunta)
+  // Controle de telas (Lobby ou Jogo)
   if (estado.fase === 'lobby' || estado.fase === 'finalizado') {
     if(el('areaLobby')) el('areaLobby').classList.remove('escondido');
     if(el('areaDesafio')) el('areaDesafio').classList.add('escondido');
-    if(el('lobbyInfo')) el('lobbyInfo').innerHTML = `Jogadores: <strong>${estado.jogadores.length} / 5</strong>`;
+    if(el('lobbyInfo')) el('lobbyInfo').innerHTML = `Jogadores: <strong>${estado.jogadores.length} / ${estado.maxJogadores}</strong>`;
     if(el('btnIniciar')) el('btnIniciar').disabled = estado.jogadores.length < 2;
   } else if (estado.fase === 'jogando') {
     if(el('areaLobby')) el('areaLobby').classList.add('escondido');
@@ -81,35 +100,33 @@ socket.on('estadoJogo', (estado) => {
   }
 });
 
-// 7. Botão Iniciar Jogo
-const btnIniciar = el('btnIniciar');
-if (btnIniciar) btnIniciar.onclick = () => socket.emit('iniciarJogo');
+// 6. Botão de Iniciar
+if (el('btnIniciar')) {
+  el('btnIniciar').onclick = () => socket.emit('iniciarJogo');
+}
 
-// 8. Mostra as Perguntas
+// 7. Exibe a Nova Pergunta
 socket.on('novaRodada', (data) => {
-  jaRespondi = false;
   if(el('mensagemRodada')) el('mensagemRodada').textContent = '';
-  if(el('desafioPergunta')) el('desafioPergunta').textContent = data.pergunta;
+  if(el('desafioPergunta')) el('desafioPergunta').textContent = data.p;
   
   const opcoesDiv = el('opcoesDesafio');
   if (opcoesDiv) {
     opcoesDiv.innerHTML = '';
-    data.opcoes.forEach((texto, index) => {
+    data.o.forEach((texto, index) => {
       const btn = document.createElement('button');
       btn.className = 'opcao';
       btn.innerHTML = `<span class="letra">${String.fromCharCode(65 + index)}</span> ${texto}`;
       btn.onclick = () => {
-        if (jaRespondi) return;
-        jaRespondi = true;
         document.querySelectorAll('.opcao').forEach(b => b.disabled = true);
-        socket.emit('responder', { opcao: index, tempoMs: 1000 });
+        socket.emit('responder', { opcao: index });
       };
       opcoesDiv.appendChild(btn);
     });
   }
 });
 
-// 9. Mostra o Resultado (Certo ou Errado)
+// 8. Exibe o Resultado da Rodada
 socket.on('resultadoRodada', (res) => {
   if(el('mensagemRodada')) el('mensagemRodada').textContent = res.mensagem;
   const botoes = document.querySelectorAll('.opcao');
@@ -121,14 +138,14 @@ socket.on('resultadoRodada', (res) => {
   }
 });
 
-// 10. Fim de Jogo
+// 9. Fim de Jogo
 socket.on('fimDeJogo', (data) => {
   if(el('modalTitulo')) el('modalTitulo').textContent = data.titulo;
   if(el('modalMensagem')) el('modalMensagem').textContent = data.mensagem;
   if(el('modalFim')) el('modalFim').classList.remove('escondido');
 });
 
-// 11. Avisos de Erro
+// 10. Tratamento de Erros (Avisos vermelhos)
 socket.on('erro', (msg) => {
   const toast = el('toast');
   if (toast) {
@@ -138,7 +155,7 @@ socket.on('erro', (msg) => {
   }
 });
 
-// 12. Chat
+// 11. Chat
 const btnEnviarChat = el('btnEnviarChat');
 if (btnEnviarChat) {
   btnEnviarChat.onclick = () => {
