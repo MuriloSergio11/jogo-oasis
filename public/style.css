@@ -1,6 +1,8 @@
 /* ============================================================
-   RESET & BASE
+   OASIS: ÚLTIMA ESPERANÇA - NOVO DESIGN
 ============================================================ */
+
+/* RESET E VARIÁVEIS */
 * {
   margin: 0;
   padding: 0;
@@ -8,94 +10,90 @@
 }
 
 :root {
-  --azul-neon: #00e5ff;
-  --roxo: #8b5cf6;
-  --roxo-escuro: #6a0dad;
-  --rosa: #ff2d95;
-  --verde: #00ff88;
-  --vermelho: #ff3860;
-  --amarelo: #ffd60a;
-  --fundo-1: #05030f;
-  --fundo-2: #0f0a2e;
-  --fundo-3: #1a0f3d;
-  --texto: #e8e6ff;
-  --texto-dim: #a89ecf;
+  --neon-cyan: #00f3ff;
+  --neon-purple: #9d00ff;
+  --neon-pink: #ff00ea;
+  --neon-green: #00ff66;
+  --neon-red: #ff003c;
+  --neon-yellow: #ffcc00;
+  
+  --bg-dark: #020108;
+  --bg-panel: rgba(10, 6, 25, 0.7);
+  --border-glass: rgba(0, 243, 255, 0.3);
+  
+  --text-main: #e6f1ff;
+  --text-muted: #8b9bb4;
 }
 
 html, body {
   min-height: 100vh;
   font-family: 'Rajdhani', sans-serif;
-  color: var(--texto);
-  background: var(--fundo-1);
+  color: var(--text-main);
+  background-color: var(--bg-dark);
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(157, 0, 255, 0.15), transparent 40%),
+    radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.15), transparent 40%);
+  background-attachment: fixed;
   overflow-x: hidden;
 }
 
 body {
   position: relative;
   padding: 20px;
-  padding-bottom: 60px;
 }
 
-/* ============================================================
-   FUNDO ANIMADO
-============================================================ */
+/* FUNDO ANIMADO (ESTRELAS E ORBES) */
 .stars {
   position: fixed;
   inset: 0;
-  background-image:
-    radial-gradient(1px 1px at 20% 30%, white, transparent),
-    radial-gradient(1px 1px at 60% 70%, white, transparent),
-    radial-gradient(1px 1px at 80% 10%, white, transparent),
-    radial-gradient(2px 2px at 40% 80%, #00e5ff, transparent),
-    radial-gradient(1px 1px at 10% 50%, white, transparent),
-    radial-gradient(1px 1px at 90% 60%, white, transparent),
-    radial-gradient(2px 2px at 75% 40%, #8b5cf6, transparent),
-    radial-gradient(1px 1px at 30% 20%, white, transparent);
-  background-size: 400px 400px, 350px 350px, 500px 500px, 450px 450px, 300px 300px, 380px 380px, 420px 420px, 320px 320px;
-  animation: estrelas 90s linear infinite;
-  z-index: 0;
-  opacity: 0.6;
+  background-image: 
+    radial-gradient(1px 1px at 10% 20%, white, transparent),
+    radial-gradient(1px 1px at 40% 60%, white, transparent),
+    radial-gradient(2px 2px at 70% 30%, var(--neon-cyan), transparent),
+    radial-gradient(1px 1px at 90% 80%, white, transparent);
+  background-size: 200px 200px, 300px 300px, 400px 400px, 250px 250px;
+  animation: pan-stars 100s linear infinite;
+  z-index: -2;
+  opacity: 0.4;
 }
 
-@keyframes estrelas {
-  from { background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
-  to { background-position: 400px 400px, -350px 350px, 500px -500px, -450px -450px, 300px -300px, -380px 380px, 420px -420px, -320px -320px; }
+@keyframes pan-stars {
+  from { background-position: 0 0, 0 0, 0 0, 0 0; }
+  to { background-position: -200px -200px, -300px -300px, -400px -400px, -250px -250px; }
 }
 
 .gradient-orb {
   position: fixed;
   border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.4;
-  z-index: 0;
+  filter: blur(100px);
+  opacity: 0.5;
+  z-index: -1;
   pointer-events: none;
-  animation: flutuar 20s ease-in-out infinite;
+  animation: pulse-orb 15s ease-in-out infinite alternate;
 }
 
 .orb1 {
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, #00e5ff, transparent 70%);
-  top: -200px; left: -200px;
+  width: 500px; height: 500px;
+  background: var(--neon-purple);
+  top: -150px; left: -100px;
 }
 
 .orb2 {
-  width: 700px; height: 700px;
-  background: radial-gradient(circle, #8b5cf6, transparent 70%);
-  bottom: -250px; right: -250px;
-  animation-delay: -10s;
+  width: 600px; height: 600px;
+  background: var(--neon-cyan);
+  bottom: -200px; right: -200px;
+  animation-delay: -5s;
 }
 
-@keyframes flutuar {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(80px, 60px) scale(1.1); }
+@keyframes pulse-orb {
+  0% { transform: scale(1) translate(0, 0); opacity: 0.3; }
+  100% { transform: scale(1.2) translate(50px, 50px); opacity: 0.6; }
 }
 
-/* ============================================================
-   HEADER
-============================================================ */
+/* CABEÇALHO */
 .main-header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
   position: relative;
   z-index: 10;
 }
@@ -105,249 +103,278 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
 }
 
 .titulo-oasis {
-  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-size: clamp(3rem, 8vw, 5rem);
   font-weight: 900;
-  letter-spacing: 0.3em;
-  background: linear-gradient(135deg, #00e5ff 0%, #8b5cf6 50%, #ff2d95 100%);
+  letter-spacing: 0.25em;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink), var(--neon-cyan));
+  background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 30px rgba(0, 229, 255, 0.6));
-  animation: glow-titulo 3s ease-in-out infinite;
+  animation: gradient-text 4s linear infinite;
+  filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.5));
 }
 
 .titulo-sub {
-  font-size: clamp(0.8rem, 2vw, 1.1rem);
-  letter-spacing: 0.5em;
-  color: var(--texto-dim);
-  font-weight: 600;
+  font-size: clamp(0.9rem, 2vw, 1.2rem);
+  letter-spacing: 0.6em;
+  color: var(--neon-cyan);
+  font-weight: 700;
+  text-shadow: 0 0 10px var(--neon-cyan);
 }
 
-@keyframes glow-titulo {
-  0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 229, 255, 0.5)); }
-  50% { filter: drop-shadow(0 0 40px rgba(139, 92, 246, 0.8)); }
+@keyframes gradient-text {
+  to { background-position: 200% center; }
 }
 
-/* ============================================================
-   CONTROLE DE TELAS (AQUI ESTÁ A CORREÇÃO)
-============================================================ */
+/* SISTEMA DE TELAS */
 .tela {
-  display: none; /* Esconde tudo por padrão */
+  display: none;
   position: relative;
   z-index: 10;
 }
 
 .tela.ativa {
-  display: block; /* Só mostra a tela que tiver a classe "ativa" */
-  animation: fadeIn 0.4s ease;
+  display: block;
+  animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .escondido {
-  display: none !important; /* Força o sumiço da tela de baixo */
+  display: none !important;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(15px); }
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ============================================================
-   CARD DE ENTRADA
-============================================================ */
+/* TELA DE ENTRADA (CARD) */
 #telaEntrada {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 60vh;
+  min-height: 65vh;
 }
 
 .card-entrada {
-  background: linear-gradient(145deg, rgba(26, 15, 61, 0.9), rgba(15, 10, 46, 0.9));
-  border: 1px solid rgba(139, 92, 246, 0.5);
-  border-radius: 20px;
-  padding: 40px;
-  max-width: 600px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-glass);
+  border-radius: 24px;
+  padding: 45px;
+  max-width: 650px;
   width: 100%;
-  box-shadow:
-    0 0 60px rgba(0, 229, 255, 0.2),
-    inset 0 0 40px rgba(139, 92, 246, 0.1);
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-entrada::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
 }
 
 .card-entrada h2 {
   font-family: 'Orbitron', sans-serif;
-  font-size: 1.6rem;
-  color: var(--azul-neon);
-  margin-bottom: 10px;
+  font-size: 1.8rem;
+  color: #fff;
+  margin-bottom: 15px;
   text-align: center;
-  text-shadow: 0 0 20px rgba(0, 229, 255, 0.6);
+  letter-spacing: 0.1em;
 }
 
 .lore {
   text-align: center;
-  color: var(--texto-dim);
-  margin-bottom: 25px;
+  color: var(--text-muted);
+  margin-bottom: 30px;
   line-height: 1.6;
-  font-size: 0.95rem;
+  font-size: 1rem;
 }
 
 .campo {
-  margin-bottom: 22px;
+  margin-bottom: 25px;
 }
 
 .campo label {
   display: block;
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--azul-neon);
-  letter-spacing: 0.1em;
-  margin-bottom: 8px;
+  color: var(--neon-cyan);
+  letter-spacing: 0.15em;
+  margin-bottom: 10px;
   text-transform: uppercase;
 }
 
 #inputNome {
   width: 100%;
-  padding: 14px 18px;
-  background: rgba(5, 3, 15, 0.7);
-  border: 2px solid rgba(139, 92, 246, 0.4);
-  border-radius: 10px;
-  color: var(--texto);
-  font-size: 1rem;
+  padding: 16px 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #fff;
+  font-size: 1.1rem;
   font-family: 'Rajdhani', sans-serif;
   transition: all 0.3s;
 }
 
 #inputNome:focus {
   outline: none;
-  border-color: var(--azul-neon);
-  box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+  background: rgba(0, 243, 255, 0.05);
 }
 
-/* Grid de avatares */
+/* AVATARES */
 .grid-avatares {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 15px;
 }
 
 .avatar-card {
-  background: rgba(5, 3, 15, 0.6);
-  border: 2px solid rgba(139, 92, 246, 0.3);
-  border-radius: 12px;
-  padding: 12px 8px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 15px 10px;
   cursor: pointer;
-  transition: all 0.25s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: center;
   position: relative;
 }
 
 .avatar-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--azul-neon);
-  box-shadow: 0 8px 25px rgba(0, 229, 255, 0.3);
+  transform: translateY(-5px);
+  border-color: var(--neon-pink);
+  box-shadow: 0 10px 25px rgba(255, 0, 234, 0.2);
 }
 
 .avatar-card.selecionado {
-  border-color: var(--azul-neon);
-  background: rgba(0, 229, 255, 0.1);
-  box-shadow: 0 0 25px rgba(0, 229, 255, 0.5);
+  border-color: var(--neon-cyan);
+  background: rgba(0, 243, 255, 0.1);
+  box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
+}
+
+.avatar-card.selecionado::after {
+  content: '✓';
+  position: absolute;
+  top: -8px; right: -8px;
+  background: var(--neon-cyan);
+  color: #000;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .avatar-emoji {
-  font-size: 2rem;
+  font-size: 2.5rem;
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
 }
 
 .avatar-nome {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  color: var(--texto);
+  color: #fff;
 }
 
 .avatar-classe {
-  font-size: 0.7rem;
-  color: var(--texto-dim);
+  font-size: 0.75rem;
+  color: var(--neon-cyan);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .avatar-hab {
-  font-size: 0.65rem;
-  color: var(--azul-neon);
-  margin-top: 4px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 6px;
   line-height: 1.2;
 }
 
-/* ============================================================
-   BOTÕES
-============================================================ */
+/* BOTÕES PRINCIPAIS */
 .btn-glow {
   display: inline-block;
   width: 100%;
-  padding: 15px 25px;
-  background: linear-gradient(135deg, var(--azul-neon), var(--roxo));
-  border: none;
-  border-radius: 10px;
-  color: #000;
+  padding: 18px 30px;
+  background: transparent;
+  border: 2px solid var(--neon-cyan);
+  border-radius: 12px;
+  color: var(--neon-cyan);
   font-family: 'Orbitron', sans-serif;
   font-weight: 900;
-  font-size: 1rem;
-  letter-spacing: 0.1em;
+  font-size: 1.1rem;
+  letter-spacing: 0.15em;
   cursor: pointer;
   transition: all 0.3s;
-  margin-top: 10px;
+  margin-top: 15px;
   text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.btn-glow::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 0%; height: 100%;
+  background: var(--neon-cyan);
+  transition: width 0.3s ease;
+  z-index: -1;
 }
 
 .btn-glow:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 229, 255, 0.6);
-  filter: brightness(1.15);
+  color: #000;
+  box-shadow: 0 0 30px rgba(0, 243, 255, 0.5);
 }
 
-.btn-glow:active {
-  transform: translateY(0);
+.btn-glow:hover::before {
+  width: 100%;
 }
 
 .btn-secundario {
   display: inline-block;
-  padding: 12px 22px;
+  padding: 14px 24px;
   background: transparent;
-  border: 2px solid var(--roxo);
-  border-radius: 10px;
-  color: var(--roxo);
+  border: 1px solid var(--text-muted);
+  border-radius: 12px;
+  color: var(--text-muted);
   font-family: 'Orbitron', sans-serif;
   font-weight: 700;
-  font-size: 0.85rem;
-  letter-spacing: 0.1em;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s;
   margin: 10px 5px 0;
 }
 
 .btn-secundario:hover {
-  background: var(--roxo);
-  color: #fff;
-  box-shadow: 0 0 25px rgba(139, 92, 246, 0.6);
+  border-color: var(--neon-pink);
+  color: var(--neon-pink);
+  box-shadow: 0 0 20px rgba(255, 0, 234, 0.2);
 }
 
-/* ============================================================
-   BARRA DE ENERGIA
-============================================================ */
+/* BARRA DE ENERGIA */
 .barra-energia-container {
-  max-width: 1300px;
-  margin: 0 auto 20px;
-  background: rgba(15, 10, 46, 0.7);
-  border: 1px solid rgba(0, 229, 255, 0.3);
-  border-radius: 15px;
-  padding: 15px 25px;
+  max-width: 1400px;
+  margin: 0 auto 30px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-glass);
+  border-radius: 20px;
+  padding: 20px 30px;
   backdrop-filter: blur(15px);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .energia-label {
@@ -356,35 +383,35 @@ body {
   align-items: center;
   font-family: 'Orbitron', sans-serif;
   font-weight: 700;
-  font-size: 0.85rem;
-  letter-spacing: 0.15em;
-  color: var(--azul-neon);
-  margin-bottom: 8px;
+  font-size: 0.95rem;
+  letter-spacing: 0.1em;
+  color: var(--text-main);
+  margin-bottom: 12px;
 }
 
 .energia-valor {
-  font-size: 1.3rem;
-  color: var(--verde);
-  text-shadow: 0 0 15px currentColor;
+  font-size: 1.5rem;
+  color: var(--neon-green);
+  text-shadow: 0 0 15px var(--neon-green);
   transition: color 0.3s;
 }
 
 .barra-energia {
   position: relative;
-  height: 24px;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 12px;
+  height: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
   overflow: hidden;
-  border: 1px solid rgba(0, 229, 255, 0.2);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.8);
 }
 
 .energia-fill {
   height: 100%;
   width: 100%;
-  background: linear-gradient(90deg, #00ff88, #00e5ff);
-  border-radius: 12px;
-  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), background 0.6s;
-  box-shadow: 0 0 20px currentColor;
+  background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan));
+  border-radius: 10px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s;
+  box-shadow: 0 0 20px var(--neon-green);
   position: relative;
 }
 
@@ -392,8 +419,8 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-  animation: shine 2s linear infinite;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+  animation: shine 1.5s infinite;
 }
 
 @keyframes shine {
@@ -402,105 +429,101 @@ body {
 }
 
 .energia-fill.media {
-  background: linear-gradient(90deg, #ffd60a, #ff9500);
-  box-shadow: 0 0 20px rgba(255, 214, 10, 0.6);
+  background: linear-gradient(90deg, var(--neon-yellow), #ff8800);
+  box-shadow: 0 0 20px var(--neon-yellow);
 }
 
 .energia-fill.baixa {
-  background: linear-gradient(90deg, #ff3860, #ff0033);
-  box-shadow: 0 0 25px rgba(255, 56, 96, 0.8);
-  animation: pulsar-energia 0.8s ease-in-out infinite;
+  background: linear-gradient(90deg, var(--neon-red), #ff0055);
+  box-shadow: 0 0 30px var(--neon-red);
+  animation: pulse-red 0.8s infinite alternate;
 }
 
-@keyframes pulsar-energia {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+@keyframes pulse-red {
+  from { opacity: 1; }
+  to { opacity: 0.5; }
 }
 
 .energia-alerta {
   position: absolute;
-  right: 10px;
+  right: 15px;
   top: 50%;
   transform: translateY(-50%);
   font-size: 1.2rem;
-  animation: pulsar-energia 0.6s ease-in-out infinite;
+  animation: pulse-red 0.5s infinite;
 }
 
-/* ============================================================
-   LAYOUT DO JOGO
-============================================================ */
+/* LAYOUT DO JOGO */
 .layout-jogo {
   display: grid;
-  grid-template-columns: 280px 1fr 280px;
-  gap: 20px;
-  max-width: 1300px;
+  grid-template-columns: 320px 1fr 320px;
+  gap: 25px;
+  max-width: 1400px;
   margin: 0 auto;
-  align-items: start;
+  align-items: stretch;
 }
 
-@media (max-width: 1000px) {
-  .layout-jogo {
-    grid-template-columns: 1fr;
-  }
-  .painel-placar, .painel-chat {
-    order: 2;
-  }
-  .painel-central {
-    order: 1;
-  }
+@media (max-width: 1100px) {
+  .layout-jogo { grid-template-columns: 1fr; }
+  .painel-placar, .painel-chat { order: 2; }
+  .painel-central { order: 1; }
 }
 
-/* Painel placar */
-.painel-placar {
-  background: linear-gradient(145deg, rgba(26, 15, 61, 0.85), rgba(15, 10, 46, 0.85));
-  border: 1px solid rgba(139, 92, 246, 0.4);
-  border-radius: 15px;
-  padding: 20px;
+/* PAINÉIS GERAIS */
+.painel-placar, .painel-central, .painel-chat {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-glass);
+  border-radius: 20px;
+  padding: 25px;
   backdrop-filter: blur(15px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
 }
 
-.painel-placar h3 {
+.painel-placar h3, .painel-chat h3 {
   font-family: 'Orbitron', sans-serif;
-  font-size: 0.9rem;
-  color: var(--azul-neon);
+  font-size: 1rem;
+  color: #fff;
   letter-spacing: 0.15em;
-  margin-bottom: 15px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(0, 229, 255, 0.3);
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
+/* PLACAR */
 .lista-jogadores {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .lista-jogadores li {
-  background: rgba(139, 92, 246, 0.15);
-  border-left: 3px solid var(--roxo);
-  border-radius: 8px;
-  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 12px 15px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   transition: all 0.3s;
 }
 
 .lista-jogadores li.lider {
-  background: linear-gradient(90deg, rgba(255, 214, 10, 0.2), rgba(139, 92, 246, 0.15));
-  border-left-color: var(--amarelo);
-  box-shadow: 0 0 15px rgba(255, 214, 10, 0.2);
+  background: linear-gradient(90deg, rgba(255, 204, 0, 0.15), transparent);
+  border-color: rgba(255, 204, 0, 0.4);
+  box-shadow: 0 0 20px rgba(255, 204, 0, 0.1);
 }
 
 .lista-jogadores li.eu {
-  background: linear-gradient(90deg, rgba(0, 229, 255, 0.15), rgba(139, 92, 246, 0.15));
-  border-left-color: var(--azul-neon);
+  background: linear-gradient(90deg, rgba(0, 243, 255, 0.15), transparent);
+  border-color: rgba(0, 243, 255, 0.4);
 }
 
 .lista-jogadores .j-avatar {
-  font-size: 1.3rem;
+  font-size: 1.5rem;
 }
 
 .lista-jogadores .j-info {
@@ -510,7 +533,7 @@ body {
 
 .lista-jogadores .j-nome {
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 1rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -519,248 +542,255 @@ body {
 .lista-jogadores .j-pts {
   font-family: 'Orbitron', sans-serif;
   font-weight: 900;
-  font-size: 1rem;
-  color: var(--verde);
-  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+  font-size: 1.1rem;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
 }
 
 .meta-info {
-  margin-top: 20px;
-  padding-top: 15px;
-  border-top: 1px solid rgba(0, 229, 255, 0.2);
-  font-size: 0.85rem;
-  color: var(--texto-dim);
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.9rem;
+  color: var(--text-muted);
   display: flex;
   justify-content: space-between;
 }
 
 .meta-info strong {
-  color: var(--azul-neon);
+  color: var(--neon-cyan);
   font-family: 'Orbitron', sans-serif;
 }
 
-/* Painel central */
+/* ÁREA CENTRAL / LOBBY */
 .painel-central {
-  background: linear-gradient(145deg, rgba(26, 15, 61, 0.85), rgba(15, 10, 46, 0.85));
-  border: 1px solid rgba(0, 229, 255, 0.3);
-  border-radius: 15px;
-  padding: 30px;
-  backdrop-filter: blur(15px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   min-height: 400px;
 }
 
 .area-lobby {
   text-align: center;
-  padding: 40px 20px;
+  padding: 30px;
 }
 
 .lobby-icon {
-  font-size: 4rem;
-  margin-bottom: 15px;
-  animation: flutuar-icon 3s ease-in-out infinite;
+  font-size: 5rem;
+  margin-bottom: 20px;
+  animation: float 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 30px var(--neon-purple));
 }
 
-@keyframes flutuar-icon {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-15px) scale(1.05); }
 }
 
 .area-lobby h2 {
   font-family: 'Orbitron', sans-serif;
-  color: var(--azul-neon);
-  margin-bottom: 12px;
+  color: #fff;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
 }
 
 #lobbyInfo {
-  color: var(--texto-dim);
-  margin-bottom: 25px;
+  color: var(--text-muted);
+  margin-bottom: 30px;
+  font-size: 1.2rem;
 }
 
 #lobbyInfo strong {
-  color: var(--azul-neon);
+  color: var(--neon-cyan);
+  font-size: 1.4rem;
+  text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
 }
 
-/* Desafio */
+/* DESAFIO / PERGUNTAS */
 .area-desafio {
-  animation: fadeIn 0.4s ease;
+  animation: slide-up 0.4s ease;
+  width: 100%;
 }
 
 .desafio-header {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
-  margin-bottom: 20px;
-  justify-content: space-between;
+  margin-bottom: 25px;
 }
 
 .tag-tipo {
-  padding: 6px 14px;
-  border-radius: 20px;
+  padding: 8px 16px;
+  border-radius: 8px;
   font-family: 'Orbitron', sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 900;
   letter-spacing: 0.1em;
 }
 
 .tag-tipo.individual {
-  background: linear-gradient(135deg, var(--roxo), var(--rosa));
-  color: #fff;
-  box-shadow: 0 0 15px rgba(255, 45, 149, 0.5);
+  background: rgba(157, 0, 255, 0.2);
+  color: #d59bff;
+  border: 1px solid rgba(157, 0, 255, 0.5);
+  box-shadow: 0 0 15px rgba(157, 0, 255, 0.3);
 }
 
 .tag-tipo.cooperativo {
-  background: linear-gradient(135deg, var(--verde), #00c2ff);
-  color: #000;
-  box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+  background: rgba(0, 255, 102, 0.15);
+  color: var(--neon-green);
+  border: 1px solid rgba(0, 255, 102, 0.4);
+  box-shadow: 0 0 15px rgba(0, 255, 102, 0.2);
 }
 
 .tag-tema {
-  padding: 6px 14px;
-  border-radius: 20px;
-  background: rgba(139, 92, 246, 0.2);
-  border: 1px solid var(--roxo);
-  font-size: 0.75rem;
-  color: var(--roxo);
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.8rem;
+  color: var(--text-main);
   font-weight: 700;
 }
 
 .tag-timer {
   font-family: 'Orbitron', sans-serif;
   font-weight: 900;
-  font-size: 1.1rem;
-  color: var(--azul-neon);
-  padding: 6px 14px;
-  background: rgba(0, 229, 255, 0.1);
-  border: 1px solid var(--azul-neon);
+  font-size: 1.2rem;
+  color: var(--neon-cyan);
+  padding: 8px 16px;
+  background: rgba(0, 243, 255, 0.1);
+  border: 1px solid rgba(0, 243, 255, 0.3);
   border-radius: 8px;
   margin-left: auto;
-  text-shadow: 0 0 15px var(--azul-neon);
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
 }
 
 .tag-timer.urgente {
-  color: var(--vermelho);
-  border-color: var(--vermelho);
-  animation: pulsar-energia 0.5s infinite;
+  color: var(--neon-red);
+  border-color: var(--neon-red);
+  background: rgba(255, 0, 60, 0.1);
+  box-shadow: 0 0 20px rgba(255, 0, 60, 0.3);
+  animation: pulse-red 0.5s infinite;
 }
 
 .desafio-pergunta {
-  font-size: 1.15rem;
-  line-height: 1.6;
-  margin-bottom: 25px;
-  color: var(--texto);
-  padding: 20px;
-  background: rgba(0, 229, 255, 0.05);
-  border-left: 4px solid var(--azul-neon);
-  border-radius: 8px;
+  font-size: 1.3rem;
+  line-height: 1.5;
+  margin-bottom: 30px;
+  color: #fff;
+  padding: 25px;
+  background: rgba(0, 0, 0, 0.3);
+  border-left: 4px solid var(--neon-cyan);
+  border-radius: 12px;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
 .opcoes {
   display: grid;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 15px;
+  margin-bottom: 25px;
 }
 
 .opcao {
-  padding: 16px 20px;
-  background: rgba(15, 10, 46, 0.6);
-  border: 2px solid rgba(139, 92, 246, 0.3);
-  border-radius: 10px;
-  color: var(--texto);
+  padding: 18px 25px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: var(--text-main);
   font-family: 'Rajdhani', sans-serif;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 600;
   text-align: left;
   cursor: pointer;
-  transition: all 0.25s;
+  transition: all 0.2s;
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 18px;
 }
 
 .opcao .letra {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(139, 92, 246, 0.3);
-  border: 1px solid var(--roxo);
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
   font-family: 'Orbitron', sans-serif;
   font-weight: 900;
-  color: var(--roxo);
+  color: #fff;
   flex-shrink: 0;
+  transition: all 0.2s;
 }
 
 .opcao:hover:not(:disabled) {
-  border-color: var(--azul-neon);
-  background: rgba(0, 229, 255, 0.1);
+  background: rgba(0, 243, 255, 0.1);
+  border-color: var(--neon-cyan);
   transform: translateX(5px);
-  box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
 }
 
 .opcao:hover:not(:disabled) .letra {
-  background: var(--azul-neon);
+  background: var(--neon-cyan);
   color: #000;
-  border-color: var(--azul-neon);
 }
 
 .opcao:disabled {
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 .opcao.certa {
-  background: rgba(0, 255, 136, 0.2) !important;
-  border-color: var(--verde) !important;
-  box-shadow: 0 0 25px rgba(0, 255, 136, 0.5);
+  background: rgba(0, 255, 102, 0.15) !important;
+  border-color: var(--neon-green) !important;
+  box-shadow: 0 0 30px rgba(0, 255, 102, 0.3);
 }
 
 .opcao.certa .letra {
-  background: var(--verde);
+  background: var(--neon-green);
   color: #000;
-  border-color: var(--verde);
 }
 
 .opcao.errada {
-  background: rgba(255, 56, 96, 0.2) !important;
-  border-color: var(--vermelho) !important;
+  background: rgba(255, 0, 60, 0.15) !important;
+  border-color: var(--neon-red) !important;
 }
 
 .opcao.errada .letra {
-  background: var(--vermelho);
+  background: var(--neon-red);
   color: #fff;
-  border-color: var(--vermelho);
 }
 
 .btn-dica {
-  padding: 10px 18px;
-  background: linear-gradient(135deg, var(--amarelo), #ff9500);
+  padding: 12px 20px;
+  background: linear-gradient(135deg, var(--neon-yellow), #ff8800);
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   color: #000;
-  font-weight: 700;
+  font-weight: 800;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
   cursor: pointer;
-  margin: 5px 5px 10px 0;
-  transition: all 0.25s;
-  font-size: 0.9rem;
+  margin: 0 10px 15px 0;
+  transition: all 0.2s;
+  box-shadow: 0 5px 15px rgba(255, 204, 0, 0.3);
 }
 
 .btn-dica:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(255, 214, 10, 0.5);
+  box-shadow: 0 8px 25px rgba(255, 204, 0, 0.5);
 }
 
 .mensagem-rodada {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 700;
   text-align: center;
-  padding: 15px;
-  border-radius: 10px;
-  margin-top: 15px;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
   line-height: 1.5;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .mensagem-rodada:empty {
@@ -768,42 +798,25 @@ body {
 }
 
 .explicacao {
-  padding: 15px;
-  background: rgba(139, 92, 246, 0.15);
-  border-left: 4px solid var(--roxo);
+  padding: 20px;
+  background: rgba(157, 0, 255, 0.1);
+  border-left: 4px solid var(--neon-purple);
   border-radius: 8px;
-  margin-top: 10px;
-  font-size: 0.95rem;
+  margin-top: 15px;
+  font-size: 1rem;
   line-height: 1.5;
-  color: var(--texto-dim);
-  animation: fadeIn 0.4s;
+  color: var(--text-main);
+  animation: slide-up 0.4s;
 }
 
 .explicacao strong {
-  color: var(--azul-neon);
+  color: #d59bff;
 }
 
-/* Chat */
+/* CHAT */
 .painel-chat {
-  background: linear-gradient(145deg, rgba(26, 15, 61, 0.85), rgba(15, 10, 46, 0.85));
-  border: 1px solid rgba(139, 92, 246, 0.4);
-  border-radius: 15px;
-  padding: 20px;
-  backdrop-filter: blur(15px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
-  height: 500px;
-}
-
-.painel-chat h3 {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.9rem;
-  color: var(--azul-neon);
-  letter-spacing: 0.15em;
-  margin-bottom: 15px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(0, 229, 255, 0.3);
 }
 
 .chat-mensagens {
@@ -811,79 +824,85 @@ body {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding-right: 5px;
-  margin-bottom: 10px;
+  gap: 10px;
+  padding-right: 10px;
+  margin-bottom: 15px;
+  max-height: 400px;
 }
 
 .chat-mensagens::-webkit-scrollbar {
   width: 6px;
 }
-
+.chat-mensagens::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.2);
+}
 .chat-mensagens::-webkit-scrollbar-thumb {
-  background: var(--roxo);
+  background: var(--neon-purple);
   border-radius: 3px;
 }
 
 .chat-msg {
-  background: rgba(139, 92, 246, 0.15);
-  border-radius: 8px;
-  padding: 8px 10px;
-  font-size: 0.85rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
   line-height: 1.4;
-  animation: fadeIn 0.3s;
+  animation: slide-up 0.2s;
   word-wrap: break-word;
 }
 
 .chat-msg .chat-nome {
   font-weight: 700;
-  color: var(--azul-neon);
+  color: var(--neon-cyan);
   margin-right: 5px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.8rem;
 }
 
 .chat-input {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
 #chatInput {
   flex: 1;
-  padding: 10px 12px;
-  background: rgba(5, 3, 15, 0.7);
-  border: 1px solid rgba(139, 92, 246, 0.4);
-  border-radius: 8px;
-  color: var(--texto);
+  padding: 12px 15px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #fff;
   font-family: 'Rajdhani', sans-serif;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 #chatInput:focus {
   outline: none;
-  border-color: var(--azul-neon);
+  border-color: var(--neon-cyan);
 }
 
 #btnEnviarChat {
-  padding: 10px 15px;
-  background: linear-gradient(135deg, var(--azul-neon), var(--roxo));
+  padding: 12px 20px;
+  background: var(--neon-cyan);
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   color: #000;
+  font-size: 1.1rem;
   font-weight: 900;
   cursor: pointer;
-  transition: all 0.25s;
+  transition: all 0.2s;
 }
 
 #btnEnviarChat:hover {
   filter: brightness(1.2);
+  box-shadow: 0 0 15px var(--neon-cyan);
 }
 
-/* ============================================================
-   MODAL DE FIM DE JOGO
-============================================================ */
+/* MODAL DE FIM DE JOGO */
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -892,53 +911,66 @@ body {
   animation: fadeIn 0.4s;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .modal-content {
-  background: linear-gradient(145deg, rgba(26, 15, 61, 0.95), rgba(15, 10, 46, 0.95));
-  border: 2px solid var(--azul-neon);
-  border-radius: 20px;
-  padding: 40px;
-  max-width: 550px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-glass);
+  border-radius: 24px;
+  padding: 50px;
+  max-width: 600px;
   width: 90%;
   text-align: center;
-  box-shadow:
-    0 0 60px rgba(0, 229, 255, 0.5),
-    inset 0 0 60px rgba(139, 92, 246, 0.1);
-  animation: zoomIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 100px rgba(0, 243, 255, 0.2);
+  animation: zoomIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-content::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
 }
 
 @keyframes zoomIn {
-  from { transform: scale(0.8); opacity: 0; }
+  from { transform: scale(0.9); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
 
 .modal-emoji {
-  font-size: 5rem;
-  margin-bottom: 15px;
-  animation: flutuar-icon 2s ease-in-out infinite;
+  font-size: 6rem;
+  margin-bottom: 20px;
+  animation: float 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.5));
 }
 
 #modalTitulo {
   font-family: 'Orbitron', sans-serif;
-  font-size: 1.8rem;
-  color: var(--azul-neon);
+  font-size: 2rem;
+  color: var(--neon-cyan);
   letter-spacing: 0.1em;
   margin-bottom: 15px;
-  text-shadow: 0 0 25px var(--azul-neon);
+  text-shadow: 0 0 20px var(--neon-cyan);
 }
 
 #modalMensagem {
-  color: var(--texto);
-  font-size: 1.1rem;
+  color: var(--text-main);
+  font-size: 1.2rem;
   line-height: 1.6;
-  margin-bottom: 25px;
+  margin-bottom: 30px;
 }
 
 .modal-placar {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 25px;
-  max-height: 200px;
+  gap: 10px;
+  margin-bottom: 30px;
+  max-height: 250px;
   overflow-y: auto;
 }
 
@@ -946,69 +978,68 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 15px;
-  background: rgba(139, 92, 246, 0.15);
-  border-radius: 8px;
+  padding: 15px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
   font-weight: 600;
+  font-size: 1.1rem;
 }
 
 .modal-placar .m-row:first-child {
-  background: linear-gradient(90deg, rgba(255, 214, 10, 0.25), rgba(139, 92, 246, 0.15));
-  border: 1px solid var(--amarelo);
+  background: linear-gradient(90deg, rgba(255, 204, 0, 0.2), transparent);
+  border: 1px solid rgba(255, 204, 0, 0.4);
 }
 
 .modal-placar .m-pts {
   font-family: 'Orbitron', sans-serif;
-  color: var(--verde);
+  color: var(--neon-cyan);
   font-weight: 900;
+  font-size: 1.2rem;
 }
 
-/* ============================================================
-   TOAST
-============================================================ */
+/* TOAST E AVISOS */
 .toast {
   position: fixed;
   bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
   padding: 15px 30px;
-  background: linear-gradient(135deg, var(--roxo), var(--azul-neon));
+  background: rgba(0, 243, 255, 0.9);
   color: #000;
-  font-weight: 700;
-  border-radius: 10px;
-  box-shadow: 0 10px 40px rgba(0, 229, 255, 0.5);
+  font-weight: 800;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 243, 255, 0.4);
   z-index: 200;
-  animation: slideUp 0.4s ease;
+  animation: slideUpToast 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   max-width: 90%;
   text-align: center;
 }
 
-@keyframes slideUp {
+@keyframes slideUpToast {
   from { transform: translate(-50%, 100px); opacity: 0; }
   to { transform: translate(-50%, 0); opacity: 1; }
 }
 
 .aviso {
-  margin-top: 15px;
-  padding: 12px;
-  background: rgba(255, 56, 96, 0.2);
-  border: 1px solid var(--vermelho);
-  border-radius: 8px;
-  color: var(--vermelho);
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(255, 0, 60, 0.2);
+  border: 1px solid var(--neon-red);
+  border-radius: 10px;
+  color: #ff9999;
   font-weight: 700;
   text-align: center;
 }
 
-/* ============================================================
-   RESPONSIVO
-============================================================ */
+/* RESPONSIVIDADE */
 @media (max-width: 600px) {
   body { padding: 10px; }
-  .card-entrada { padding: 25px 20px; }
+  .card-entrada { padding: 30px 20px; }
   .painel-central { padding: 20px; }
-  .desafio-pergunta { font-size: 1rem; padding: 15px; }
-  .opcao { padding: 12px 15px; font-size: 0.9rem; }
-  .titulo-oasis { letter-spacing: 0.15em; }
-  .titulo-sub { letter-spacing: 0.2em; }
-  .painel-chat { height: 400px; }
+  .desafio-pergunta { font-size: 1.1rem; padding: 15px; }
+  .opcao { padding: 15px; font-size: 1rem; }
+  .titulo-oasis { font-size: 2.5rem; letter-spacing: 0.15em; }
+  .titulo-sub { letter-spacing: 0.3em; font-size: 0.8rem; }
+  .tag-timer { margin-left: 0; width: 100%; text-align: center; }
 }
