@@ -15,8 +15,7 @@ const estado = {
   rodada: 0,
   rodadaAtual: null,
   fase: 'lobby',
-  vencedor: null,
-  tipoFinal: null
+  vencedor: null
 };
 
 const PONTOS_VITORIA = 100;
@@ -32,19 +31,22 @@ const AVATARES = {
 };
 
 const DESAFIOS_INDIVIDUAIS = [
-  { pergunta: "🧩 ENIGMA: Se 3 Gunters resolvem 3 enigmas em 3 minutos, quanto tempo 9 Gunters levam para 9 enigmas?", opcoes: ["9 minutos", "3 minutos", "27 minutos", "1 minuto"], correta: 1, tema: "Lógica", dica: "Quantos enigmas cada Gunter resolve por minuto?", pontos: 15 },
-  { pergunta: "🔐 CRIPTOGRAFIA: 'OASIS' com César +3 fica:", opcoes: ["RDVLV", "OASIS", "PBUJS", "NDRHR"], correta: 0, tema: "Lógica", dica: "Avance 3 letras.", pontos: 15 },
-  { pergunta: "⏱️ TEMPO: 1 hora no OASIS = 1 minuto real. 3 horas no OASIS = quantos minutos reais?", opcoes: ["3 minutos", "180 minutos", "60 minutos", "30 minutos"], correta: 0, tema: "Lógica", dica: "Multiplique por 3.", pontos: 15 },
-  { pergunta: "💾 CULTURA POP: Qual NÃO é chave do filme Jogador Nº 1?", opcoes: ["Corrida Copper Key", "Enigma na Disco", "Duelo Montserrat", "Desafio Planeta Doom"], correta: 1, tema: "Cultura Pop", dica: "Uma envolve Kubrick.", pontos: 15 }
+  { pergunta: "🧩 ENIGMA: Se 3 Gunters resolvem 3 enigmas em 3 minutos, quanto tempo 9 Gunters levam para 9 enigmas?", opcoes: ["9 minutos", "3 minutos", "27 minutos", "1 minuto"], correta: 1, tema: "Lógica", pontos: 15 },
+  { pergunta: "🔐 CRIPTOGRAFIA: A palavra 'OASIS' com Cifra de César (+3) fica:", opcoes: ["RDVLV", "OASIS", "PBUJS", "NDRHR"], correta: 0, tema: "Lógica", pontos: 15 },
+  { pergunta: "⏱️ TEMPO: No OASIS, 1 hora equivale a 1 minuto real. Se você ficar 3 horas, quantos minutos reais se passaram?", opcoes: ["3 minutos", "180 minutos", "60 minutos", "30 minutos"], correta: 0, tema: "Lógica", pontos: 15 },
+  { pergunta: "💾 CULTURA POP: Qual NÃO é uma das chaves no filme Jogador Nº 1?", opcoes: ["Corrida Copper Key", "Enigma na Disco", "Duelo Montserrat", "Desafio Planeta Doom"], correta: 1, tema: "Cultura Pop", pontos: 15 },
+  { pergunta: "🎮 GAME DESIGN: Qual NÃO é fundamental em um jogo digital?", opcoes: ["Objetivo claro", "Regras definidas", "Feedback ao jogador", "Gráficos 4K obrigatórios"], correta: 3, tema: "Design", pontos: 15 },
+  { pergunta: "🔢 SEQUÊNCIA: Qual o próximo número da sequência 2, 3, 5, 9, 17, ...?", opcoes: ["25", "33", "31", "35"], correta: 1, tema: "Lógica", pontos: 15 }
 ];
 
 const DESAFIOS_COOPERATIVOS = [
-  { pergunta: "⚖️ O servidor está com 40%. Como economizar?", opcoes: ["Desligar entretenimento (perde 10k jogadores, salva 20%)", "Manter tudo e arriscar (0%)", "Desligar só publicidade e inativos (salva 8%)", "Imposto virtual para ricos"], correta: 2, tema: "Ética", dica: "Existe escolha sem sacrifício.", explicacao: "A solução equilibrada não prejudica ninguém." }
+  { pergunta: "⚖️ DILEMA DO OASIS: O servidor está com 40% de energia. Como vocês vão economizar?", opcoes: ["Desligar entretenimento (perde 10k jogadores, salva 20%)", "Manter tudo ligado e arriscar colapso (0%)", "Desligar apenas publicidade e servidores inativos (salva 8%)", "Criar um imposto virtual para os jogadores ricos"], correta: 2, tema: "Ética", explicacao: "A solução equilibrada não prejudica ninguém e ainda economiza energia." },
+  { pergunta: "🌍 REALIDADE VS VIRTUAL: Vocês encontraram o Ovo de Ouro. O que fazer com ele?", opcoes: ["Ativar sozinho e controlar o OASIS", "Vender o Ovo para uma megacorporação (IOI)", "Destruir o Ovo para ninguém controlar", "Dividir o controle entre todos os jogadores"], correta: 3, tema: "Ética", explicacao: "O verdadeiro tesouro é a cooperação." }
 ];
 
 function jogadoresArray() {
   return Object.values(estado.jogadores).map(j => ({
-    id: j.id, nome: j.nome, avatar: j.avatar, avatarInfo: j.avatarInfo, pontos: j.pontos, habilidadeUsada: j.habilidadeUsada
+    id: j.id, nome: j.nome, avatar: j.avatar, avatarInfo: j.avatarInfo, pontos: j.pontos
   }));
 }
 
@@ -106,22 +108,11 @@ function encerrarRodada() {
       const [vencedorId, vencedorResp] = acertos[0];
       const vencedor = estado.jogadores[vencedorId];
       if (vencedor) {
-        let pontosGanhos = pergunta.pontos;
-        if (vencedor.avatar === 'art3mis' && vencedorResp.tempo < 5000) pontosGanhos += 5;
-        let rouboInfo = null;
-        if (vencedor.avatar === 'irok') {
-          const lider = jogadoresArray().sort((a, b) => b.pontos - a.pontos)[0];
-          if (lider && lider.id !== vencedorId && lider.pontos >= 3) {
-            estado.jogadores[lider.id].pontos -= 3;
-            vencedor.pontos += 3;
-            rouboInfo = { de: lider.nome, pontos: 3 };
-          }
-        }
-        vencedor.pontos += pontosGanhos;
+        vencedor.pontos += pergunta.pontos;
         io.emit('resultadoRodada', {
           tipo: 'individual', vencedor: vencedor.nome, avatar: vencedor.avatarInfo.emoji,
-          pontosGanhos, respostaCorreta: pergunta.correta, rouboInfo, energia: estado.energia,
-          jogadores: jogadoresArray(), mensagem: `🏆 ${vencedor.nome} acertou primeiro! +${pontosGanhos} pts`
+          pontosGanhos: pergunta.pontos, respostaCorreta: pergunta.correta, energia: estado.energia,
+          jogadores: jogadoresArray(), mensagem: `🏆 ${vencedor.nome} acertou primeiro! +${pergunta.pontos} pts`
         });
       }
     } else {
@@ -131,33 +122,10 @@ function encerrarRodada() {
         mensagem: `❌ Ninguém acertou. A resposta era: ${pergunta.opcoes[pergunta.correta]}`
       });
     }
-    const totalErros = Object.values(respostas).filter(r => r.opcao !== pergunta.correta).length;
-    if (totalErros > 0) {
-      estado.energia = Math.max(0, estado.energia - totalErros * 3);
-      io.emit('energiaMudou', { energia: estado.energia, delta: -totalErros * 3, motivo: `${totalErros} jogador(es) erraram` });
-    }
-  }
-
-  if (tipo === 'cooperativo') {
-    const contagem = {};
-    Object.values(respostas).forEach(r => { contagem[r.opcao] = (contagem[r.opcao] || 0) + 1; });
-    let opcaoMaisVotada = -1, maxVotos = 0;
-    Object.entries(contagem).forEach(([o, v]) => { if (v > maxVotos) { maxVotos = v; opcaoMaisVotada = parseInt(o); } });
-    const acertouColetivo = opcaoMaisVotada === pergunta.correta;
-    const empate = Object.keys(respostas).length === 0;
-    let delta = 0;
-    if (empate) delta = -5;
-    else if (acertouColetivo) {
-      delta = +20;
-      Object.entries(respostas).forEach(([jid, r]) => {
-        if (r.opcao === pergunta.correta && estado.jogadores[jid]) estado.jogadores[jid].pontos += 5;
-      });
-    } else delta = -15;
-    estado.energia = Math.max(0, Math.min(100, estado.energia + delta));
+  } else if (tipo === 'cooperativo') {
     io.emit('resultadoRodada', {
-      tipo: 'cooperativo', respostaCorreta: pergunta.correta, opcaoMaisVotada, acertouColetivo, empate,
-      explicacao: pergunta.explicacao, energia: estado.energia, jogadores: jogadoresArray(),
-      mensagem: empate ? `⚖️ Empate! -5% energia.` : acertouColetivo ? `✅ Maioria acertou! +20% energia.` : `❌ Maioria errou! -15% energia.`
+      tipo: 'cooperativo', respostaCorreta: pergunta.correta, explicacao: pergunta.explicacao,
+      energia: estado.energia, jogadores: jogadoresArray(), mensagem: `A resposta correta era: ${pergunta.opcoes[pergunta.correta]}`
     });
   }
 
@@ -171,25 +139,15 @@ function verificarFim() {
   const v = jogadoresArray().find(j => j.pontos >= PONTOS_VITORIA);
   if (v) { finalizarJogo('individual', v.nome); return true; }
   if (estado.energia <= 0) { finalizarJogo('derrota_coletiva', null); return true; }
-  if (estado.energia >= 100 && estado.rodada >= 6) { finalizarJogo('vitoria_coletiva', null); return true; }
   return false;
 }
 
 function finalizarJogo(tipo, vencedor) {
   estado.fase = 'finalizado';
   estado.jogoAtivo = false;
-  estado.tipoFinal = tipo;
-  estado.vencedor = vencedor;
-  let titulo, mensagem, emoji;
-  if (tipo === 'individual') {
-    emoji = '🏆'; titulo = 'VITÓRIA INDIVIDUAL';
-    mensagem = `${vencedor} controla o OASIS!`;
-  } else if (tipo === 'vitoria_coletiva') {
-    emoji = '🌟'; titulo = 'VITÓRIA COLETIVA'; mensagem = 'Todos salvaram o OASIS juntos!';
-  } else {
-    emoji = '💀'; titulo = 'DERROTA COLETIVA'; mensagem = 'Energia a 0%. O OASIS colapsou.';
-  }
-  io.emit('fimDeJogo', { tipo, titulo, mensagem, emoji, energia: estado.energia, jogadores: jogadoresArray(), vencedor });
+  let titulo = tipo === 'individual' ? 'VITÓRIA INDIVIDUAL' : 'DERROTA COLETIVA';
+  let mensagem = tipo === 'individual' ? `${vencedor} controla o OASIS!` : 'Energia a 0%. O OASIS colapsou.';
+  io.emit('fimDeJogo', { titulo, mensagem, emoji: tipo === 'individual' ? '🏆' : '💀', jogadores: jogadoresArray() });
   if (timeoutRodada) clearTimeout(timeoutRodada);
 }
 
@@ -205,20 +163,19 @@ io.on('connection', (socket) => {
     const avatarInfo = AVATARES[avatarId] || AVATARES.parzival;
     estado.jogadores[socket.id] = {
       id: socket.id, nome: (nome || 'Anônimo').substring(0, 18),
-      avatar: avatarInfo.id, avatarInfo, pontos: 0, habilidadeUsada: false
+      avatar: avatarInfo.id, avatarInfo, pontos: 0
     };
-    
     socket.emit('bemVindo', { id: socket.id });
-    enviarEstado(); // Envia o estado logo de cara para desenhar a tela
+    enviarEstado();
   });
 
   socket.on('iniciarJogo', () => {
-    if (Object.keys(estado.jogadores).length < MIN_JOGADORES) return socket.emit('erro', 'Mínimo de 2 jogadores.');
+    if (Object.keys(estado.jogadores).length < MIN_JOGADORES) return socket.emit('erro', `Precisa de pelo menos ${MIN_JOGADORES} jogadores.`);
     estado.fase = 'jogando';
     estado.jogoAtivo = true;
     estado.rodada = 0;
     estado.energia = 100;
-    Object.values(estado.jogadores).forEach(j => { j.pontos = 0; j.habilidadeUsada = false; });
+    Object.values(estado.jogadores).forEach(j => { j.pontos = 0; });
     io.emit('jogoIniciado');
     setTimeout(() => proximaRodada(), 1500);
   });
@@ -240,7 +197,7 @@ io.on('connection', (socket) => {
     estado.energia = 100;
     estado.rodada = 0;
     estado.rodadaAtual = null;
-    Object.values(estado.jogadores).forEach(j => { j.pontos = 0; j.habilidadeUsada = false; });
+    Object.values(estado.jogadores).forEach(j => { j.pontos = 0; });
     io.emit('jogoReiniciado');
     enviarEstado();
   });
@@ -257,4 +214,4 @@ io.on('connection', (socket) => {
 });
 
 const PORTA = process.env.PORT || 3000;
-server.listen(PORTA, '0.0.0.0', () => console.log(`Rodando na porta ${PORTA}`));
+server.listen(PORTA, '0.0.0.0', () => console.log(`Servidor OASIS rodando na porta ${PORTA}`));
