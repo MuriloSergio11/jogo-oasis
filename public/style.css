@@ -1,8 +1,6 @@
 /* ============================================================
-   OASIS: ÚLTIMA ESPERANÇA - NOVO DESIGN
+   RESET E VARIÁVEIS
 ============================================================ */
-
-/* RESET E VARIÁVEIS */
 * {
   margin: 0;
   padding: 0;
@@ -12,13 +10,12 @@
 :root {
   --neon-cyan: #00f3ff;
   --neon-purple: #9d00ff;
-  --neon-pink: #ff00ea;
   --neon-green: #00ff66;
   --neon-red: #ff003c;
   --neon-yellow: #ffcc00;
   
-  --bg-dark: #020108;
-  --bg-panel: rgba(10, 6, 25, 0.7);
+  --bg-dark: #05030f;
+  --bg-panel: rgba(15, 10, 46, 0.85);
   --border-glass: rgba(0, 243, 255, 0.3);
   
   --text-main: #e6f1ff;
@@ -42,7 +39,9 @@ body {
   padding: 20px;
 }
 
-/* FUNDO ANIMADO (ESTRELAS E ORBES) */
+/* ============================================================
+   FUNDO ANIMADO (ESTRELAS E ORBES)
+============================================================ */
 .stars {
   position: fixed;
   inset: 0;
@@ -90,7 +89,9 @@ body {
   100% { transform: scale(1.2) translate(50px, 50px); opacity: 0.6; }
 }
 
-/* CABEÇALHO */
+/* ============================================================
+   CABEÇALHO
+============================================================ */
 .main-header {
   text-align: center;
   margin-bottom: 40px;
@@ -110,7 +111,7 @@ body {
   font-size: clamp(3rem, 8vw, 5rem);
   font-weight: 900;
   letter-spacing: 0.25em;
-  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink), var(--neon-cyan));
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-cyan));
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
@@ -131,7 +132,9 @@ body {
   to { background-position: 200% center; }
 }
 
-/* SISTEMA DE TELAS */
+/* ============================================================
+   CONTROLE DE TELAS
+============================================================ */
 .tela {
   display: none;
   position: relative;
@@ -152,7 +155,9 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* TELA DE ENTRADA (CARD) */
+/* ============================================================
+   TELA DE ENTRADA
+============================================================ */
 #telaEntrada {
   display: flex;
   justify-content: center;
@@ -233,7 +238,9 @@ body {
   background: rgba(0, 243, 255, 0.05);
 }
 
-/* AVATARES */
+/* ============================================================
+   AVATARES
+============================================================ */
 .grid-avatares {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -253,8 +260,8 @@ body {
 
 .avatar-card:hover {
   transform: translateY(-5px);
-  border-color: var(--neon-pink);
-  box-shadow: 0 10px 25px rgba(255, 0, 234, 0.2);
+  border-color: var(--neon-purple);
+  box-shadow: 0 10px 25px rgba(157, 0, 255, 0.2);
 }
 
 .avatar-card.selecionado {
@@ -297,14 +304,9 @@ body {
   letter-spacing: 0.05em;
 }
 
-.avatar-hab {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  margin-top: 6px;
-  line-height: 1.2;
-}
-
-/* BOTÕES PRINCIPAIS */
+/* ============================================================
+   BOTÕES
+============================================================ */
 .btn-glow {
   display: inline-block;
   width: 100%;
@@ -360,12 +362,14 @@ body {
 }
 
 .btn-secundario:hover {
-  border-color: var(--neon-pink);
-  color: var(--neon-pink);
-  box-shadow: 0 0 20px rgba(255, 0, 234, 0.2);
+  border-color: var(--neon-purple);
+  color: var(--neon-purple);
+  box-shadow: 0 0 20px rgba(157, 0, 255, 0.2);
 }
 
-/* BARRA DE ENERGIA */
+/* ============================================================
+   BARRA DE ENERGIA
+============================================================ */
 .barra-energia-container {
   max-width: 1400px;
   margin: 0 auto 30px;
@@ -428,32 +432,9 @@ body {
   to { transform: translateX(100%); }
 }
 
-.energia-fill.media {
-  background: linear-gradient(90deg, var(--neon-yellow), #ff8800);
-  box-shadow: 0 0 20px var(--neon-yellow);
-}
-
-.energia-fill.baixa {
-  background: linear-gradient(90deg, var(--neon-red), #ff0055);
-  box-shadow: 0 0 30px var(--neon-red);
-  animation: pulse-red 0.8s infinite alternate;
-}
-
-@keyframes pulse-red {
-  from { opacity: 1; }
-  to { opacity: 0.5; }
-}
-
-.energia-alerta {
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.2rem;
-  animation: pulse-red 0.5s infinite;
-}
-
-/* LAYOUT DO JOGO */
+/* ============================================================
+   LAYOUT DO JOGO
+============================================================ */
 .layout-jogo {
   display: grid;
   grid-template-columns: 320px 1fr 320px;
@@ -469,7 +450,6 @@ body {
   .painel-central { order: 1; }
 }
 
-/* PAINÉIS GERAIS */
 .painel-placar, .painel-central, .painel-chat {
   background: var(--bg-panel);
   border: 1px solid var(--border-glass);
@@ -492,7 +472,9 @@ body {
   gap: 10px;
 }
 
-/* PLACAR */
+/* ============================================================
+   PLACAR
+============================================================ */
 .lista-jogadores {
   list-style: none;
   display: flex;
@@ -562,7 +544,9 @@ body {
   font-family: 'Orbitron', sans-serif;
 }
 
-/* ÁREA CENTRAL / LOBBY */
+/* ============================================================
+   ÁREA CENTRAL / LOBBY / PERGUNTAS
+============================================================ */
 .painel-central {
   display: flex;
   flex-direction: column;
@@ -604,74 +588,6 @@ body {
   color: var(--neon-cyan);
   font-size: 1.4rem;
   text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
-}
-
-/* DESAFIO / PERGUNTAS */
-.area-desafio {
-  animation: slide-up 0.4s ease;
-  width: 100%;
-}
-
-.desafio-header {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 25px;
-}
-
-.tag-tipo {
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-}
-
-.tag-tipo.individual {
-  background: rgba(157, 0, 255, 0.2);
-  color: #d59bff;
-  border: 1px solid rgba(157, 0, 255, 0.5);
-  box-shadow: 0 0 15px rgba(157, 0, 255, 0.3);
-}
-
-.tag-tipo.cooperativo {
-  background: rgba(0, 255, 102, 0.15);
-  color: var(--neon-green);
-  border: 1px solid rgba(0, 255, 102, 0.4);
-  box-shadow: 0 0 15px rgba(0, 255, 102, 0.2);
-}
-
-.tag-tema {
-  padding: 8px 16px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 0.8rem;
-  color: var(--text-main);
-  font-weight: 700;
-}
-
-.tag-timer {
-  font-family: 'Orbitron', sans-serif;
-  font-weight: 900;
-  font-size: 1.2rem;
-  color: var(--neon-cyan);
-  padding: 8px 16px;
-  background: rgba(0, 243, 255, 0.1);
-  border: 1px solid rgba(0, 243, 255, 0.3);
-  border-radius: 8px;
-  margin-left: auto;
-  box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
-}
-
-.tag-timer.urgente {
-  color: var(--neon-red);
-  border-color: var(--neon-red);
-  background: rgba(255, 0, 60, 0.1);
-  box-shadow: 0 0 20px rgba(255, 0, 60, 0.3);
-  animation: pulse-red 0.5s infinite;
 }
 
 .desafio-pergunta {
@@ -741,47 +657,6 @@ body {
   opacity: 0.5;
 }
 
-.opcao.certa {
-  background: rgba(0, 255, 102, 0.15) !important;
-  border-color: var(--neon-green) !important;
-  box-shadow: 0 0 30px rgba(0, 255, 102, 0.3);
-}
-
-.opcao.certa .letra {
-  background: var(--neon-green);
-  color: #000;
-}
-
-.opcao.errada {
-  background: rgba(255, 0, 60, 0.15) !important;
-  border-color: var(--neon-red) !important;
-}
-
-.opcao.errada .letra {
-  background: var(--neon-red);
-  color: #fff;
-}
-
-.btn-dica {
-  padding: 12px 20px;
-  background: linear-gradient(135deg, var(--neon-yellow), #ff8800);
-  border: none;
-  border-radius: 10px;
-  color: #000;
-  font-weight: 800;
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 1rem;
-  cursor: pointer;
-  margin: 0 10px 15px 0;
-  transition: all 0.2s;
-  box-shadow: 0 5px 15px rgba(255, 204, 0, 0.3);
-}
-
-.btn-dica:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 204, 0, 0.5);
-}
-
 .mensagem-rodada {
   font-size: 1.2rem;
   font-weight: 700;
@@ -813,7 +688,9 @@ body {
   color: #d59bff;
 }
 
-/* CHAT */
+/* ============================================================
+   CHAT
+============================================================ */
 .painel-chat {
   display: flex;
   flex-direction: column;
@@ -898,7 +775,9 @@ body {
   box-shadow: 0 0 15px var(--neon-cyan);
 }
 
-/* MODAL DE FIM DE JOGO */
+/* ============================================================
+   MODAL DE FIM DE JOGO E TOAST
+============================================================ */
 .modal {
   position: fixed;
   inset: 0;
@@ -965,39 +844,6 @@ body {
   margin-bottom: 30px;
 }
 
-.modal-placar {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 30px;
-  max-height: 250px;
-  overflow-y: auto;
-}
-
-.modal-placar .m-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-
-.modal-placar .m-row:first-child {
-  background: linear-gradient(90deg, rgba(255, 204, 0, 0.2), transparent);
-  border: 1px solid rgba(255, 204, 0, 0.4);
-}
-
-.modal-placar .m-pts {
-  font-family: 'Orbitron', sans-serif;
-  color: var(--neon-cyan);
-  font-weight: 900;
-  font-size: 1.2rem;
-}
-
-/* TOAST E AVISOS */
 .toast {
   position: fixed;
   bottom: 30px;
@@ -1022,17 +868,19 @@ body {
 }
 
 .aviso {
-  margin-top: 20px;
-  padding: 15px;
+  margin-top: 15px;
+  padding: 12px;
   background: rgba(255, 0, 60, 0.2);
   border: 1px solid var(--neon-red);
-  border-radius: 10px;
-  color: #ff9999;
+  border-radius: 8px;
+  color: var(--neon-red);
   font-weight: 700;
   text-align: center;
 }
 
-/* RESPONSIVIDADE */
+/* ============================================================
+   RESPONSIVIDADE
+============================================================ */
 @media (max-width: 600px) {
   body { padding: 10px; }
   .card-entrada { padding: 30px 20px; }
@@ -1041,5 +889,4 @@ body {
   .opcao { padding: 15px; font-size: 1rem; }
   .titulo-oasis { font-size: 2.5rem; letter-spacing: 0.15em; }
   .titulo-sub { letter-spacing: 0.3em; font-size: 0.8rem; }
-  .tag-timer { margin-left: 0; width: 100%; text-align: center; }
 }
