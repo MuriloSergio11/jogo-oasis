@@ -3,14 +3,17 @@ let usuarioLogado = null;
 let avatarSelecionado = 'parzival';
 
 const AVATARES = {
-  parzival: { emoji: '🛡️', nome: 'Parzival' }, art3mis: { emoji: '⚡', nome: 'Art3mis' },
-  curator: { emoji: '🧠', nome: 'Curator' }, irok: { emoji: '💥', nome: 'I-R0k' }, og: { emoji: '🔮', nome: 'Og' }
+  parzival: { emoji: '🛡️', nome: 'Parzival' }, 
+  art3mis:  { emoji: '⚡', nome: 'Art3mis' },
+  curator:  { emoji: '🧠', nome: 'Curator' }, 
+  irok:     { emoji: '💥', nome: 'I-R0k' }, 
+  og:       { emoji: '🔮', nome: 'Og' }
 };
 
 const $ = (id) => document.getElementById(id);
 
 // ==========================================
-// TROCAS DE TELAS (LOGIN <-> CADASTRO)
+// 1. NAVEGAÇÃO ENTRE LOGIN E CADASTRO
 // ==========================================
 $('btnIrParaCadastro').onclick = () => {
   $('telaLogin').classList.add('escondido');
@@ -23,7 +26,7 @@ $('btnVoltarLogin').onclick = () => {
 };
 
 // ==========================================
-// AÇÃO DE LOGAR
+// 2. AÇÃO DE LOGAR
 // ==========================================
 $('btnFazerLogin').onclick = () => {
   const u = $('inputLoginUser').value.trim();
@@ -33,7 +36,7 @@ $('btnFazerLogin').onclick = () => {
 };
 
 // ==========================================
-// AÇÃO DE CADASTRAR
+// 3. AÇÃO DE CADASTRAR
 // ==========================================
 $('btnConfirmarCadastro').onclick = () => {
   const u = $('inputCadUser').value.trim();
@@ -50,7 +53,7 @@ function mostrarAviso(idElemento, msg) {
 }
 
 // ==========================================
-// RESPOSTAS DO SERVIDOR (LOGIN E CADASTRO)
+// 4. RESPOSTAS DO SERVIDOR
 // ==========================================
 socket.on('loginSucesso', (data) => {
   usuarioLogado = data.usuario;
@@ -79,7 +82,7 @@ socket.on('cadastroSucesso', () => {
 socket.on('erroCadastro', (msg) => mostrarAviso('avisoCadastro', msg));
 
 // ==========================================
-// ESCOLHA DE AVATAR E ENTRAR NA SALA
+// 5. ESCOLHA DE AVATAR E ENTRAR NA SALA
 // ==========================================
 function montarAvatares() {
   const grid = $('gridAvatares');
@@ -108,7 +111,7 @@ socket.on('bemVindo', (data) => {
 });
 
 // ==========================================
-// LÓGICA DO JOGO
+// 6. LÓGICA DO JOGO (PLACAR, PERGUNTAS, ETC)
 // ==========================================
 socket.on('estadoJogo', (estado) => {
   const lista = $('listaJogadores');
@@ -182,7 +185,7 @@ socket.on('erro', (msg) => {
   }
 });
 
-// CHAT
+// 7. CHAT
 if ($('btnEnviarChat')) {
   $('btnEnviarChat').onclick = () => {
     const input = $('chatInput');
