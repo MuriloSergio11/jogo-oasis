@@ -21,7 +21,7 @@ const estado = {
 
 const PONTOS_VITORIA = 100;
 const MIN_JOGADORES = 2;
-const MAX_JOGADORES = 5; // <-- LIMITE DE 5 JOGADORES AQUI
+const MAX_JOGADORES = 5; // LIMITE DE 2 A 5 JOGADORES
 
 const AVATARES = {
   parzival: { id: 'parzival', emoji: '🛡️', nome: 'Parzival', classe: 'Guardião', habilidade: 'Escudo de Gelo', descricao: 'Ao errar, perde metade dos pontos.' },
@@ -67,7 +67,7 @@ function enviarEstado() {
     rodada: estado.rodada,
     fase: estado.fase,
     pontosVitoria: PONTOS_VITORIA,
-    maxJogadores: MAX_JOGADORES // <-- Envia o limite para o visual do jogo
+    maxJogadores: MAX_JOGADORES // <-- Envia o limite para o frontend
   });
 }
 
@@ -228,7 +228,6 @@ io.on('connection', (socket) => {
       return socket.emit('erro', 'Partida em andamento. Aguarde o fim da rodada para entrar.');
     }
     
-    // Impede nomes repetidos
     const nomeExiste = Object.values(estado.jogadores).some(j => j.nome.toLowerCase() === nome.toLowerCase());
     if (nomeExiste) {
       return socket.emit('erro', 'Este nome já está em uso. Escolha outro.');
