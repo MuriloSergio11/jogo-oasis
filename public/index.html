@@ -21,29 +21,49 @@
   </header>
 
   <main>
-    <!-- TELA 1: LOGIN / CADASTRO -->
+    <!-- TELA 1: LOGIN -->
     <section id="telaLogin" class="tela ativa">
       <div class="card-entrada">
         <h2>Acesso ao OASIS</h2>
-        <p class="lore">Faça login ou crie sua conta para entrar na arena.</p>
+        <p class="lore">Entre com sua conta ou crie uma nova para jogar.</p>
         
         <div class="campo">
-          <label>Usuário (Nome)</label>
-          <input type="text" id="inputUsuario" placeholder="Seu nome de jogador..." maxlength="15" />
+          <label>Usuário</label>
+          <input type="text" id="inputLoginUser" placeholder="Seu usuário..." maxlength="15" />
         </div>
         <div class="campo">
           <label>Senha</label>
-          <input type="password" id="inputSenha" placeholder="Sua senha secreta..." maxlength="20" />
+          <input type="password" id="inputLoginPass" placeholder="Sua senha..." maxlength="20" />
         </div>
         
-        <button id="btnLogin" class="btn-glow" style="margin-bottom: 10px;">▶ Entrar na Conta</button>
-        <button id="btnCadastrar" class="btn-secundario" style="width: 100%;">Criar Nova Conta</button>
-        
-        <div id="avisoLogin" class="aviso escondido" style="margin-top: 15px;"></div>
+        <button id="btnFazerLogin" class="btn-glow">▶ Entrar na Conta</button>
+        <button id="btnIrParaCadastro" class="btn-secundario">Criar Nova Conta</button>
+        <div id="avisoLogin" class="aviso escondido"></div>
       </div>
     </section>
 
-    <!-- TELA 2: ESCOLHA DE AVATAR -->
+    <!-- TELA 2: CADASTRO -->
+    <section id="telaCadastro" class="tela escondido">
+      <div class="card-entrada">
+        <h2>Criar Nova Conta</h2>
+        <p class="lore">Registre-se para começar sua jornada no OASIS.</p>
+        
+        <div class="campo">
+          <label>Novo Usuário</label>
+          <input type="text" id="inputCadUser" placeholder="Escolha um nome..." maxlength="15" />
+        </div>
+        <div class="campo">
+          <label>Nova Senha</label>
+          <input type="password" id="inputCadPass" placeholder="Crie uma senha..." maxlength="20" />
+        </div>
+        
+        <button id="btnConfirmarCadastro" class="btn-glow">✔ Cadastrar</button>
+        <button id="btnVoltarLogin" class="btn-secundario">Voltar para o Login</button>
+        <div id="avisoCadastro" class="aviso escondido"></div>
+      </div>
+    </section>
+
+    <!-- TELA 3: ESCOLHA DE AVATAR -->
     <section id="telaAvatar" class="tela escondido">
       <div class="card-entrada">
         <h2>Escolha seu Avatar</h2>
@@ -57,7 +77,7 @@
       </div>
     </section>
 
-    <!-- TELA 3: JOGO -->
+    <!-- TELA 4: JOGO -->
     <section id="telaJogo" class="tela escondido">
       <div class="barra-energia-container">
         <div class="energia-label">
