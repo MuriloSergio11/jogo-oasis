@@ -14,9 +14,13 @@ const AVATARES_LOCAL = {
   og:       { emoji: '🔮', nome: 'Og', classe: 'Oráculo', hab: 'Visão' }
 };
 
+// Pega os elementos
 const $ = (id) => document.getElementById(id);
 const telaEntrada = $('telaEntrada'), telaJogo = $('telaJogo'), gridAvatares = $('gridAvatares'), inputNome = $('inputNome'), btnEntrar = $('btnEntrar'), avisoEntrada = $('avisoEntrada'), energiaFill = $('energiaFill'), energiaValor = $('energiaValor'), energiaAlerta = $('energiaAlerta'), listaJogadores = $('listaJogadores'), metaPontos = $('metaPontos'), numRodada = $('numRodada'), areaLobby = $('areaLobby'), areaDesafio = $('areaDesafio'), lobbyInfo = $('lobbyInfo'), btnIniciar = $('btnIniciar'), btnReiniciar = $('btnReiniciar'), desafioTipo = $('desafioTipo'), desafioTema = $('desafioTema'), desafioTimer = $('desafioTimer'), desafioPergunta = $('desafioPergunta'), opcoesDesafio = $('opcoesDesafio'), btnDica = $('btnDica'), btnOg = $('btnOg'), mensagemRodada = $('mensagemRodada'), explicacaoCoop = $('explicacaoCoop'), chatMensagens = $('chatMensagens'), chatInput = $('chatInput'), btnEnviarChat = $('btnEnviarChat'), modalFim = $('modalFim'), modalEmoji = $('modalEmoji'), modalTitulo = $('modalTitulo'), modalMensagem = $('modalMensagem'), modalPlacarFinal = $('modalPlacarFinal'), btnJogarNovamente = $('btnJogarNovamente'), toast = $('toast');
 
+// ==========================================
+// CRIA OS AVATARES NA TELA
+// ==========================================
 function montarAvatares() {
   if(!gridAvatares) return;
   gridAvatares.innerHTML = '';
@@ -30,15 +34,21 @@ function montarAvatares() {
 }
 montarAvatares();
 
-btnEntrar.addEventListener('click', () => {
-  const nome = inputNome.value.trim();
-  if (!nome) { mostrarAvisoEntrada('Digite um nome!'); return; }
-  btnEntrar.disabled = true;
-  btnEntrar.textContent = 'Conectando...';
-  socket.emit('entrar', { nome, avatarId: meuAvatarId });
-});
+// ==========================================
+// SISTEMA DE ENTRAR NO JOGO
+// ==========================================
+if(btnEntrar) {
+  btnEntrar.addEventListener('click', () => {
+    const nome = inputNome.value.trim();
+    if (!nome) { mostrarAvisoEntrada('Digite um nome!'); return; }
+    btnEntrar.disabled = true;
+    btnEntrar.textContent = 'Conectando...';
+    socket.emit('entrar', { nome, avatarId: meuAvatarId });
+  });
+}
 
 function mostrarAvisoEntrada(msg) { 
+  if(!avisoEntrada) return;
   avisoEntrada.textContent = '⚠️ ' + msg; 
   avisoEntrada.classList.remove('escondido'); 
   btnEntrar.disabled = false; 
@@ -52,30 +62,38 @@ socket.on('bemVindo', ({ id }) => {
   telaJogo.classList.remove('escondido');
 });
 
+// ==========================================
+// ATUALIZA O JOGO (LOBBY, PLACAR, ETC)
+// ==========================================
 socket.on('estadoJogo', (estado) => {
   estadoAtual = estado;
+  
+  // Atualiza barras e placar
   atualizarEnergia(estado.energia);
   atualizarPlacar(estado.jogadores);
-  metaPontos.textContent = estado.pontosVitoria + ' pts';
-  numRodada.textContent = estado.rodada;
+  if(metaPontos) metaPontos.textContent = estado.pontosVitoria + ' pts';
+  if(numRodada) numRodada.textContent = estado.rodada;
   
-  // LÓGICA CORRIGIDA: Garante que o Lobby apareça na tela
+  // Mostra o Lobby central ou a Pergunta
   if (estado.fase === 'lobby' || estado.fase === 'finalizado') {
-    areaLobby.classList.remove('escondido'); 
-    areaDesafio.classList.add('escondido');
-    lobbyInfo.innerHTML = `A sala tem <strong>${estado.jogadores.length} / ${estado.maxJogadores} jogadores</strong>.`;
-    btnIniciar.disabled = estado.jogadores.length < 2;
+    if(areaLobby) areaLobby.classList.remove('escondido'); 
+    if(areaDesafio) areaDesafio.classList.add('escondido');
+    if(lobbyInfo) lobbyInfo.innerHTML = `A sala tem <strong>${estado.jogadores.length} / ${estado.maxJogadores} jogadores</strong>.`;
+    if(btnIniciar) btnIniciar.disabled = estado.jogadores.length < 2;
   } else if (estado.fase === 'jogando') { 
-    areaLobby.classList.add('escondido'); 
+    if(areaLobby) areaLobby.classList.add('escondido'); 
   }
 });
 
 function atualizarEnergia(valor) {
-  energiaFill.style.width = valor + '%'; energiaValor.textContent = valor + '%';
-  energiaFill.classList.remove('media', 'baixa'); energiaValor.style.color = '';
-  if (valor <= 25) { energiaFill.classList.add('baixa'); energiaValor.style.color = 'var(--neon-red)'; energiaAlerta.classList.remove('escondido'); }
-  else if (valor <= 60) { energiaFill.classList.add('media'); energiaValor.style.color = 'var(--neon-yellow)'; energiaAlerta.classList.add('escondido'); }
-  else { energiaValor.style.color = 'var(--neon-green)'; energiaAlerta.classList.add('escondido'); }
+  if(!energiaFill) return;
+  energiaFill.style.width = valor + '%'; 
+  if(energiaValor) energiaValor.textContent = valor + '%';
+  energiaFill.classList.remove('media', 'baixa'); 
+  if(energiaValor) energiaValor.style.color = '';
+  if (valor <= 25) { energiaFill.classList.add('baixa'); if(energiaValor) energiaValor.style.color = 'var(--neon-red)'; if(energiaAlerta) energiaAlerta.classList.remove('escondido'); }
+  else if (valor <= 60) { energiaFill.classList.add('media'); if(energiaValor) energiaValor.style.color = 'var(--neon-yellow)'; if(energiaAlerta) energiaAlerta.classList.add('escondido'); }
+  else { if(energiaValor) energiaValor.style.color = 'var(--neon-green)'; if(energiaAlerta) energiaAlerta.classList.add('escondido'); }
 }
 
 function atualizarPlacar(jogadores) {
@@ -92,40 +110,62 @@ function atualizarPlacar(jogadores) {
 
 function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
-btnIniciar.addEventListener('click', () => socket.emit('iniciarJogo'));
-btnReiniciar.addEventListener('click', () => socket.emit('reiniciar'));
+if(btnIniciar) btnIniciar.addEventListener('click', () => socket.emit('iniciarJogo'));
+if(btnReiniciar) btnReiniciar.addEventListener('click', () => socket.emit('reiniciar'));
 
+// ==========================================
+// NOVA RODADA DE PERGUNTAS
+// ==========================================
 socket.on('novaRodada', (data) => {
   jaRespondi = false;
-  areaLobby.classList.add('escondido'); areaDesafio.classList.remove('escondido');
-  mensagemRodada.textContent = ''; explicacaoCoop.classList.add('escondido'); explicacaoCoop.innerHTML = '';
-  desafioTipo.textContent = data.tipo === 'individual' ? '🟣 DESAFIO INDIVIDUAL' : '🟢 DESAFIO COOPERATIVO';
-  desafioTipo.className = 'tag-tipo ' + data.tipo;
-  desafioTema.textContent = data.tema || ''; desafioPergunta.textContent = data.pergunta;
-  opcoesDesafio.innerHTML = '';
-  data.opcoes.forEach((opcao, idx) => {
-    const btn = document.createElement('button'); btn.className = 'opcao';
-    btn.innerHTML = `<span class="letra">${String.fromCharCode(65 + idx)}</span><span>${escapeHtml(opcao)}</span>`;
-    btn.addEventListener('click', () => responder(idx)); opcoesDesafio.appendChild(btn);
-  });
-  const meuJogador = estadoAtual.jogadores.find(j => j.id === meuId);
-  btnDica.classList.add('escondido'); btnOg.classList.add('escondido');
-  if (meuJogador) {
-    if (meuJogador.avatar === 'curator') { btnDica.classList.remove('escondido'); btnDica.disabled = false; }
-    if (meuJogador.avatar === 'og' && !meuJogador.habilidadeUsada && data.tipo === 'individual') { btnOg.classList.remove('escondido'); btnOg.disabled = false; }
+  if(areaLobby) areaLobby.classList.add('escondido'); 
+  if(areaDesafio) areaDesafio.classList.remove('escondido');
+  if(mensagemRodada) mensagemRodada.textContent = ''; 
+  if(explicacaoCoop) { explicacaoCoop.classList.add('escondido'); explicacaoCoop.innerHTML = ''; }
+  
+  if(desafioTipo) {
+    desafioTipo.textContent = data.tipo === 'individual' ? '🟣 DESAFIO INDIVIDUAL' : '🟢 DESAFIO COOPERATIVO';
+    desafioTipo.className = 'tag-tipo ' + data.tipo;
   }
-  inicioPergunta = Date.now(); iniciarTimer(data.duracao);
+  if(desafioTema) desafioTema.textContent = data.tema || ''; 
+  if(desafioPergunta) desafioPergunta.textContent = data.pergunta;
+  
+  if(opcoesDesafio) {
+    opcoesDesafio.innerHTML = '';
+    data.opcoes.forEach((opcao, idx) => {
+      const btn = document.createElement('button'); btn.className = 'opcao';
+      btn.innerHTML = `<span class="letra">${String.fromCharCode(65 + idx)}</span><span>${escapeHtml(opcao)}</span>`;
+      btn.addEventListener('click', () => responder(idx)); opcoesDesafio.appendChild(btn);
+    });
+  }
+  
+  const meuJogador = estadoAtual.jogadores.find(j => j.id === meuId);
+  if(btnDica) btnDica.classList.add('escondido'); 
+  if(btnOg) btnOg.classList.add('escondido');
+  
+  if (meuJogador) {
+    if (meuJogador.avatar === 'curator' && btnDica) { btnDica.classList.remove('escondido'); btnDica.disabled = false; }
+    if (meuJogador.avatar === 'og' && !meuJogador.habilidadeUsada && data.tipo === 'individual' && btnOg) { btnOg.classList.remove('escondido'); btnOg.disabled = false; }
+  }
+  
+  inicioPergunta = Date.now(); 
+  iniciarTimer(data.duracao);
 });
 
 function iniciarTimer(segundos) {
   if (timerInterval) clearInterval(timerInterval);
-  let restante = segundos; desafioTimer.textContent = formatarTempo(restante); desafioTimer.classList.remove('urgente');
+  let restante = segundos; 
+  if(desafioTimer) { desafioTimer.textContent = formatarTempo(restante); desafioTimer.classList.remove('urgente'); }
   timerInterval = setInterval(() => {
-    restante--; desafioTimer.textContent = formatarTempo(restante);
-    if (restante <= 5) desafioTimer.classList.add('urgente');
+    restante--; 
+    if(desafioTimer) {
+      desafioTimer.textContent = formatarTempo(restante);
+      if (restante <= 5) desafioTimer.classList.add('urgente');
+    }
     if (restante <= 0) clearInterval(timerInterval);
   }, 1000);
 }
+
 function formatarTempo(s) { if (s < 0) s = 0; return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; }
 
 function responder(idx) {
@@ -135,12 +175,19 @@ function responder(idx) {
   socket.emit('responder', { opcao: idx, tempoMs });
 }
 
-btnDica.addEventListener('click', () => { socket.emit('pedirDica'); btnDica.disabled = true; });
-socket.on('dica', ({ dica }) => { mensagemRodada.textContent = '💡 Dica: ' + dica; mensagemRodada.style.color = 'var(--neon-yellow)'; });
-btnOg.addEventListener('click', () => { socket.emit('usarHabilidadeOg'); btnOg.disabled = true; btnOg.classList.add('escondido'); });
+// ==========================================
+// DICAS E HABILIDADES
+// ==========================================
+if(btnDica) btnDica.addEventListener('click', () => { socket.emit('pedirDica'); btnDica.disabled = true; });
+socket.on('dica', ({ dica }) => { if(mensagemRodada) { mensagemRodada.textContent = '💡 Dica: ' + dica; mensagemRodada.style.color = 'var(--neon-yellow)'; } });
+
+if(btnOg) btnOg.addEventListener('click', () => { socket.emit('usarHabilidadeOg'); btnOg.disabled = true; btnOg.classList.add('escondido'); });
 socket.on('revelarResposta', ({ correta }) => { mostrarToast('🔮 Visão revelada!'); const btn = document.querySelectorAll('.opcao')[correta]; if (btn) btn.style.borderColor = 'var(--neon-green)'; });
 socket.on('ogUsouHabilidade', ({ nome }) => { mostrarToast(`🔮 ${nome} usou a Visão do Oráculo!`); });
 
+// ==========================================
+// RESULTADO DA RODADA
+// ==========================================
 socket.on('resultadoRodada', (r) => {
   if (timerInterval) clearInterval(timerInterval);
   document.querySelectorAll('.opcao').forEach((btn, i) => {
@@ -148,40 +195,68 @@ socket.on('resultadoRodada', (r) => {
     if (i === r.respostaCorreta) btn.classList.add('certa');
     else if (i === (r.opcaoEscolhida ?? r.opcaoMaisVotada) && !(r.acertou || r.acertouColetivo)) btn.classList.add('errada');
   });
-  if (r.tipo === 'individual') {
-    mensagemRodada.textContent = r.mensagem; mensagemRodada.style.color = r.vencedor ? 'var(--neon-green)' : 'var(--neon-red)';
-    if (r.rouboInfo) mensagemRodada.textContent += ` (💥 Roubou ${r.rouboInfo.pontos} pts de ${r.rouboInfo.de})`;
-  } else {
-    mensagemRodada.textContent = r.mensagem; mensagemRodada.style.color = r.acertouColetivo ? 'var(--neon-green)' : 'var(--neon-red)';
-    if (r.explicacao) { explicacaoCoop.innerHTML = `<strong>Por quê?</strong> ${escapeHtml(r.explicacao)}`; explicacaoCoop.classList.remove('escondido'); }
+  
+  if(mensagemRodada) {
+    if (r.tipo === 'individual') {
+      mensagemRodada.textContent = r.mensagem; mensagemRodada.style.color = r.vencedor ? 'var(--neon-green)' : 'var(--neon-red)';
+      if (r.rouboInfo) mensagemRodada.textContent += ` (💥 Roubou ${r.rouboInfo.pontos} pts de ${r.rouboInfo.de})`;
+    } else {
+      mensagemRodada.textContent = r.mensagem; mensagemRodada.style.color = r.acertouColetivo ? 'var(--neon-green)' : 'var(--neon-red)';
+    }
+  }
+  
+  if (r.tipo === 'cooperativo' && r.explicacao && explicacaoCoop) { 
+    explicacaoCoop.innerHTML = `<strong>Por quê?</strong> ${escapeHtml(r.explicacao)}`; explicacaoCoop.classList.remove('escondido'); 
   }
   atualizarEnergia(r.energia); atualizarPlacar(r.jogadores);
 });
 
+// ==========================================
+// FIM DE JOGO
+// ==========================================
 socket.on('fimDeJogo', (data) => {
   if (timerInterval) clearInterval(timerInterval);
-  modalEmoji.textContent = data.emoji; modalTitulo.textContent = data.titulo; modalMensagem.textContent = data.mensagem;
-  modalPlacarFinal.innerHTML = '';
-  [...data.jogadores].sort((a, b) => b.pontos - a.pontos).forEach(j => {
-    const row = document.createElement('div'); row.className = 'm-row';
-    row.innerHTML = `<span>${j.avatarInfo ? j.avatarInfo.emoji : '🔷'} ${escapeHtml(j.nome)}</span><span class="m-pts">${j.pontos} pts</span>`;
-    modalPlacarFinal.appendChild(row);
-  });
-  modalFim.classList.remove('escondido');
+  if(modalEmoji) modalEmoji.textContent = data.emoji; 
+  if(modalTitulo) modalTitulo.textContent = data.titulo; 
+  if(modalMensagem) modalMensagem.textContent = data.mensagem;
+  if(modalPlacarFinal) {
+    modalPlacarFinal.innerHTML = '';
+    [...data.jogadores].sort((a, b) => b.pontos - a.pontos).forEach(j => {
+      const row = document.createElement('div'); row.className = 'm-row';
+      row.innerHTML = `<span>${j.avatarInfo ? j.avatarInfo.emoji : '🔷'} ${escapeHtml(j.nome)}</span><span class="m-pts">${j.pontos} pts</span>`;
+      modalPlacarFinal.appendChild(row);
+    });
+  }
+  if(modalFim) modalFim.classList.remove('escondido');
 });
 
-btnJogarNovamente.addEventListener('click', () => { modalFim.classList.add('escondido'); socket.emit('reiniciar'); });
-socket.on('jogoReiniciado', () => { modalFim.classList.add('escondido'); areaDesafio.classList.add('escondido'); areaLobby.classList.remove('escondido'); mensagemRodada.textContent = ''; explicacaoCoop.classList.add('escondido'); });
+if(btnJogarNovamente) btnJogarNovamente.addEventListener('click', () => { modalFim.classList.add('escondido'); socket.emit('reiniciar'); });
+socket.on('jogoReiniciado', () => { 
+  if(modalFim) modalFim.classList.add('escondido'); 
+  if(areaDesafio) areaDesafio.classList.add('escondido'); 
+  if(areaLobby) areaLobby.classList.remove('escondido'); 
+  if(mensagemRodada) mensagemRodada.textContent = ''; 
+  if(explicacaoCoop) explicacaoCoop.classList.add('escondido'); 
+});
+
+// ==========================================
+// NOTIFICAÇÕES E CHAT
+// ==========================================
 socket.on('erro', (msg) => { mostrarToast('⚠️ ' + msg); });
-function mostrarToast(msg) { toast.textContent = msg; toast.classList.remove('escondido'); clearTimeout(window._toastTimer); window._toastTimer = setTimeout(() => toast.classList.add('escondido'), 4000); }
+function mostrarToast(msg) { if(!toast) return; toast.textContent = msg; toast.classList.remove('escondido'); clearTimeout(window._toastTimer); window._toastTimer = setTimeout(() => toast.classList.add('escondido'), 4000); }
 socket.on('energiaMudou', ({ delta, motivo }) => { const sinal = delta > 0 ? '+' : ''; mostrarToast(`⚡ Energia ${sinal}${delta}% — ${motivo}`); });
 
-btnEnviarChat.addEventListener('click', enviarChat);
-chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') enviarChat(); });
-function enviarChat() { const texto = chatInput.value.trim(); if (!texto) return; socket.emit('chat', { texto }); chatInput.value = ''; }
+if(btnEnviarChat) btnEnviarChat.addEventListener('click', enviarChat);
+if(chatInput) chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') enviarChat(); });
+function enviarChat() { 
+  if(!chatInput) return;
+  const texto = chatInput.value.trim(); if (!texto) return; 
+  socket.emit('chat', { texto }); chatInput.value = ''; 
+}
 socket.on('chatMsg', ({ nome, avatar, texto }) => {
+  if(!chatMensagens) return;
   const div = document.createElement('div'); div.className = 'chat-msg';
   div.innerHTML = `<span class="chat-nome">${avatar} ${escapeHtml(nome)}:</span>${escapeHtml(texto)}`;
   chatMensagens.appendChild(div); chatMensagens.scrollTop = chatMensagens.scrollHeight;
 });
-socket.on('jogoIniciado', () => { chatMensagens.innerHTML = ''; mostrarToast('🎮 A partida começou!'); });
+socket.on('jogoIniciado', () => { if(chatMensagens) chatMensagens.innerHTML = ''; mostrarToast('🎮 A partida começou!'); });
