@@ -1,5 +1,5 @@
 /* ============================================================
-   RESET E VARIÁVEIS GLOBAIS
+   RESET E VARIÁVEIS
 ============================================================ */
 * {
   margin: 0;
@@ -13,11 +13,10 @@
   --neon-red: #ff003c;
   --neon-purple: #9d00ff;
   --bg-dark: #05030f;
-  --bg-panel: rgba(12, 8, 30, 0.75);
-  --bg-input: rgba(0, 0, 0, 0.6);
+  --bg-panel: rgba(15, 10, 46, 0.85);
   --text-main: #e6f1ff;
   --text-muted: #8b9bb4;
-  --border-glass: rgba(0, 243, 255, 0.25);
+  --border-glass: rgba(0, 243, 255, 0.3);
 }
 
 html, body {
@@ -32,13 +31,13 @@ body {
   position: relative;
   padding: 20px;
   background-image: 
-    radial-gradient(circle at 10% 40%, rgba(157, 0, 255, 0.12), transparent 45%),
-    radial-gradient(circle at 90% 60%, rgba(0, 243, 255, 0.12), transparent 45%);
+    radial-gradient(circle at 10% 40%, rgba(157, 0, 255, 0.15), transparent 45%),
+    radial-gradient(circle at 90% 60%, rgba(0, 243, 255, 0.15), transparent 45%);
   background-attachment: fixed;
 }
 
 /* ============================================================
-   FUNDO ANIMADO (ESTRELAS E ORBES)
+   FUNDO ANIMADO
 ============================================================ */
 .stars {
   position: fixed;
@@ -46,17 +45,16 @@ body {
   background-image: 
     radial-gradient(1px 1px at 15% 25%, white, transparent),
     radial-gradient(1px 1px at 45% 65%, white, transparent),
-    radial-gradient(2px 2px at 75% 35%, var(--neon-cyan), transparent),
-    radial-gradient(1px 1px at 85% 85%, white, transparent);
-  background-size: 250px 250px, 350px 350px, 450px 450px, 300px 300px;
+    radial-gradient(2px 2px at 75% 35%, var(--neon-cyan), transparent);
+  background-size: 250px 250px, 350px 350px, 450px 450px;
   animation: pan-stars 120s linear infinite;
   z-index: -2;
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
 @keyframes pan-stars {
-  from { background-position: 0 0, 0 0, 0 0, 0 0; }
-  to { background-position: -250px -250px, -350px -350px, -450px -450px, -300px -300px; }
+  from { background-position: 0 0, 0 0, 0 0; }
+  to { background-position: -250px -250px, -350px -350px, -450px -450px; }
 }
 
 .gradient-orb {
@@ -66,29 +64,22 @@ body {
   opacity: 0.4;
   z-index: -1;
   pointer-events: none;
-  animation: pulse-orb 18s ease-in-out infinite alternate;
 }
 
 .orb1 {
-  width: 550px;
-  height: 550px;
+  width: 500px;
+  height: 500px;
   background: var(--neon-purple);
-  top: -200px;
-  left: -150px;
+  top: -150px;
+  left: -100px;
 }
 
 .orb2 {
-  width: 650px;
-  height: 650px;
+  width: 600px;
+  height: 600px;
   background: var(--neon-cyan);
-  bottom: -250px;
-  right: -150px;
-  animation-delay: -9s;
-}
-
-@keyframes pulse-orb {
-  0% { transform: scale(1) translate(0, 0); opacity: 0.3; }
-  100% { transform: scale(1.15) translate(60px, 60px); opacity: 0.5; }
+  bottom: -200px;
+  right: -200px;
 }
 
 /* ============================================================
@@ -99,13 +90,6 @@ body {
   margin-bottom: 40px;
   position: relative;
   z-index: 10;
-}
-
-.titulo-jogo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
 }
 
 .titulo-oasis {
@@ -119,7 +103,6 @@ body {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: gradient-text 5s linear infinite;
-  filter: drop-shadow(0 0 25px rgba(0, 243, 255, 0.6));
 }
 
 .titulo-sub {
@@ -135,7 +118,7 @@ body {
 }
 
 /* ============================================================
-   CONTROLE DE TELAS E ANIMAÇÕES
+   CONTROLE DE TELAS
 ============================================================ */
 .tela {
   display: none;
@@ -144,73 +127,54 @@ body {
 }
 
 .tela.ativa {
-  display: block;
-  animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  animation: fade-in 0.4s ease;
 }
 
 .escondido {
   display: none !important;
 }
 
-@keyframes slide-up {
-  from { opacity: 0; transform: translateY(30px); }
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(15px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 /* ============================================================
-   TELA DE LOGIN E ESCOLHA DE AVATAR
+   CARD DE LOGIN/CADASTRO
 ============================================================ */
-#telaLogin, 
-#telaAvatar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 60vh;
-}
-
 .card-entrada {
   background: var(--bg-panel);
   border: 1px solid var(--border-glass);
-  border-radius: 24px;
+  border-radius: 20px;
   padding: 45px;
-  max-width: 550px;
+  max-width: 500px;
   width: 100%;
-  backdrop-filter: blur(20px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-  position: relative;
-  overflow: hidden;
-}
-
-.card-entrada::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
 }
 
 .card-entrada h2 {
   font-family: 'Orbitron', sans-serif;
   color: var(--neon-cyan);
   text-align: center;
-  margin-bottom: 25px;
-  font-size: 1.6rem;
+  margin-bottom: 10px;
+  font-size: 1.5rem;
   letter-spacing: 0.1em;
 }
 
 .lore {
   text-align: center;
   color: var(--text-muted);
-  margin-bottom: 25px;
+  margin-bottom: 30px;
   font-size: 0.95rem;
-  line-height: 1.5;
 }
 
-/* ============================================================
-   CAMPOS DE TEXTO (LOGIN)
-============================================================ */
 .campo {
-  margin-bottom: 22px;
+  margin-bottom: 20px;
 }
 
 .campo label {
@@ -223,74 +187,34 @@ body {
   letter-spacing: 1px;
 }
 
-#inputUsuario, 
-#inputSenha {
+/* ============================================================
+   CAMPOS DE TEXTO (CORRIGIDOS)
+============================================================ */
+input[type="text"],
+input[type="password"],
+input[type="email"] {
   width: 100%;
-  padding: 16px 20px;
-  background: var(--bg-input);
-  border: 1px solid rgba(0, 243, 255, 0.15);
-  border-radius: 12px;
-  color: #fff;
+  padding: 14px 18px;
+  background-color: #0a0618 !important;
+  border: 1px solid rgba(0, 243, 255, 0.2);
+  border-radius: 10px;
+  color: #fff !important;
   font-size: 1.1rem;
   font-family: 'Rajdhani', sans-serif;
   outline: none;
-  transition: all 0.3s ease;
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
+  transition: all 0.3s;
 }
 
-#inputUsuario:focus, 
-#inputSenha:focus {
+input[type="text"]:focus,
+input[type="password"]:focus {
   border-color: var(--neon-cyan);
-  background: rgba(0, 243, 255, 0.05);
-  box-shadow: 0 0 20px rgba(0, 243, 255, 0.3), inset 0 0 10px rgba(0, 243, 255, 0.1);
+  background-color: #0a0618 !important;
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
 }
 
-#inputUsuario::placeholder, 
-#inputSenha::placeholder {
-  color: rgba(139, 155, 180, 0.5);
+input::placeholder {
+  color: #5a6b84;
   font-style: italic;
-}
-
-/* ============================================================
-   AVATARES
-============================================================ */
-.grid-avatares {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(85px, 1fr));
-  gap: 12px;
-}
-
-.avatar-card {
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  padding: 15px 10px;
-  cursor: pointer;
-  text-align: center;
-  transition: all 0.25s;
-}
-
-.avatar-card:hover {
-  border-color: var(--neon-cyan);
-  transform: translateY(-3px);
-}
-
-.avatar-card.selecionado {
-  border-color: var(--neon-cyan);
-  background: rgba(0, 243, 255, 0.12);
-  box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
-}
-
-.avatar-emoji {
-  font-size: 2.2rem;
-  display: block;
-  margin-bottom: 6px;
-}
-
-.avatar-nome {
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
 }
 
 /* ============================================================
@@ -301,28 +225,21 @@ body {
   padding: 16px;
   background: transparent;
   border: 2px solid var(--neon-cyan);
-  border-radius: 12px;
+  border-radius: 10px;
   color: var(--neon-cyan);
   font-family: 'Orbitron', sans-serif;
   font-weight: 900;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s;
-  margin-top: 12px;
+  margin-top: 10px;
   text-transform: uppercase;
-  letter-spacing: 1px;
 }
 
-.btn-glow:hover:not(:disabled) {
+.btn-glow:hover {
   background: var(--neon-cyan);
   color: #000;
-  box-shadow: 0 0 30px rgba(0, 243, 255, 0.6);
-}
-
-.btn-glow:disabled {
-  border-color: rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.15);
-  cursor: not-allowed;
+  box-shadow: 0 0 20px var(--neon-cyan);
 }
 
 .btn-secundario {
@@ -330,7 +247,7 @@ body {
   padding: 16px;
   background: transparent;
   border: 2px solid rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
+  border-radius: 10px;
   color: #fff;
   font-family: 'Orbitron', sans-serif;
   font-weight: 900;
@@ -339,12 +256,51 @@ body {
   transition: all 0.3s;
   margin-top: 12px;
   text-transform: uppercase;
-  letter-spacing: 1px;
 }
 
 .btn-secundario:hover {
   border-color: #fff;
   background: rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================================
+   AVATARES
+============================================================ */
+.grid-avatares {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 10px;
+}
+
+.avatar-card {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 15px 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.avatar-card:hover {
+  border-color: var(--neon-cyan);
+}
+
+.avatar-card.selecionado {
+  border-color: var(--neon-cyan);
+  background: rgba(0, 243, 255, 0.15);
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+}
+
+.avatar-emoji {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.avatar-nome {
+  font-size: 0.85rem;
+  font-weight: 700;
 }
 
 /* ============================================================
@@ -355,22 +311,19 @@ body {
   margin: 0 auto 25px;
   background: var(--bg-panel);
   border: 1px solid var(--border-glass);
-  border-radius: 16px;
+  border-radius: 15px;
   padding: 20px 30px;
   backdrop-filter: blur(15px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
 .energia-label {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   font-family: 'Orbitron', sans-serif;
   color: var(--neon-cyan);
   font-weight: 700;
-  margin-bottom: 12px;
-  font-size: 0.9rem;
-  letter-spacing: 0.15em;
+  margin-bottom: 10px;
+  letter-spacing: 0.1em;
 }
 
 .energia-valor {
@@ -381,19 +334,17 @@ body {
 
 .barra-energia {
   height: 20px;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.6);
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
 }
 
 .energia-fill {
   height: 100%;
   width: 100%;
   background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan));
-  border-radius: 10px;
-  transition: width 0.5s ease;
   box-shadow: 0 0 20px var(--neon-green);
+  transition: width 0.5s;
 }
 
 /* ============================================================
@@ -414,20 +365,16 @@ body {
   .painel-central { order: 1; }
 }
 
-.painel-placar, 
-.painel-central, 
-.painel-chat {
+.painel-placar, .painel-central, .painel-chat {
   background: var(--bg-panel);
   border: 1px solid var(--border-glass);
-  border-radius: 16px;
+  border-radius: 15px;
   padding: 25px;
   min-height: 450px;
   backdrop-filter: blur(15px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-.painel-placar h3, 
-.painel-chat h3 {
+.painel-placar h3, .painel-chat h3 {
   font-family: 'Orbitron', sans-serif;
   color: var(--neon-cyan);
   border-bottom: 1px solid rgba(0, 243, 255, 0.2);
@@ -437,26 +384,22 @@ body {
   letter-spacing: 0.15em;
 }
 
-/* ============================================================
-   PLACAR
-============================================================ */
 .lista-jogadores {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .lista-jogadores li {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   background: rgba(255, 255, 255, 0.03);
-  padding: 14px;
+  padding: 12px;
   border-radius: 10px;
-  border-left: 4px solid var(--neon-purple);
-  font-size: 1.1rem;
-  transition: all 0.3s;
+  border-left: 3px solid var(--neon-purple);
+  font-size: 1.05rem;
 }
 
 .lista-jogadores li.eu {
@@ -486,13 +429,13 @@ body {
 
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
+  50% { transform: translateY(-10px); }
 }
 
 .area-lobby h2 {
   font-family: 'Orbitron', sans-serif;
   color: #fff;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   font-size: 1.5rem;
 }
 
@@ -510,11 +453,10 @@ body {
   font-size: 1.25rem;
   line-height: 1.6;
   padding: 25px;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4);
   border-left: 4px solid var(--neon-cyan);
   border-radius: 10px;
   margin-bottom: 25px;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
 }
 
 .opcoes {
@@ -525,8 +467,8 @@ body {
 
 .opcao {
   padding: 16px 20px;
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   color: #fff;
   font-size: 1.05rem;
@@ -542,7 +484,7 @@ body {
 .opcao:hover:not(:disabled) {
   border-color: var(--neon-cyan);
   background: rgba(0, 243, 255, 0.1);
-  transform: translateX(6px);
+  transform: translateX(5px);
 }
 
 .opcao .letra {
@@ -555,9 +497,8 @@ body {
   height: 32px;
   border-radius: 8px;
   font-weight: 900;
-  font-family: 'Orbitron', sans-serif;
-  flex-shrink: 0;
   margin-right: 15px;
+  flex-shrink: 0;
 }
 
 .mensagem-rodada {
@@ -566,8 +507,6 @@ body {
   font-weight: 700;
   text-align: center;
   color: var(--neon-cyan);
-  padding: 10px;
-  border-radius: 8px;
 }
 
 /* ============================================================
@@ -586,11 +525,10 @@ body {
   flex-direction: column;
   gap: 10px;
   margin-bottom: 15px;
-  padding-right: 8px;
+  padding-right: 5px;
 }
 
 .chat-mensagens::-webkit-scrollbar { width: 6px; }
-.chat-mensagens::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 3px; }
 .chat-mensagens::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 3px; }
 
 .chat-msg {
@@ -598,21 +536,15 @@ body {
   padding: 10px 14px;
   border-radius: 10px;
   font-size: 0.95rem;
-  animation: slide-up 0.2s;
-  line-height: 1.4;
-  word-wrap: break-word;
 }
 
 .chat-nome {
   font-weight: 700;
   color: var(--neon-cyan);
-  margin-right: 6px;
+  margin-right: 5px;
 }
 
-.chat-input {
-  display: flex;
-  gap: 10px;
-}
+.chat-input { display: flex; gap: 10px; }
 
 #chatInput {
   flex: 1;
@@ -623,14 +555,9 @@ body {
   color: #fff;
   outline: none;
   font-family: 'Rajdhani', sans-serif;
-  font-size: 1rem;
-  transition: all 0.3s;
 }
 
-#chatInput:focus {
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
-}
+#chatInput:focus { border-color: var(--neon-cyan); }
 
 #btnEnviarChat {
   padding: 12px 20px;
@@ -639,17 +566,11 @@ body {
   border-radius: 10px;
   cursor: pointer;
   font-weight: 900;
-  font-size: 1rem;
   transition: all 0.2s;
 }
 
-#btnEnviarChat:hover {
-  filter: brightness(1.2);
-  box-shadow: 0 0 15px var(--neon-cyan);
-}
-
 /* ============================================================
-   MODAL DE FIM DE JOGO E TOAST
+   MODAL E AVISOS
 ============================================================ */
 .modal {
   position: fixed;
@@ -659,7 +580,7 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 100;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(10px);
 }
 
 .modal-content {
@@ -669,29 +590,15 @@ body {
   padding: 50px;
   text-align: center;
   max-width: 500px;
-  width: 90%;
-  box-shadow: 0 0 60px rgba(0, 243, 255, 0.4);
-  animation: slide-up 0.5s;
 }
 
-.modal-emoji {
-  font-size: 6rem;
-  margin-bottom: 20px;
-  animation: float 2.5s ease-in-out infinite;
-}
+.modal-emoji { font-size: 6rem; margin-bottom: 20px; }
 
 #modalTitulo {
   font-family: 'Orbitron', sans-serif;
   color: var(--neon-cyan);
   margin-bottom: 15px;
   font-size: 2rem;
-  text-shadow: 0 0 20px var(--neon-cyan);
-}
-
-#modalMensagem {
-  font-size: 1.2rem;
-  line-height: 1.6;
-  color: var(--text-muted);
 }
 
 .toast {
@@ -705,9 +612,6 @@ body {
   font-weight: 800;
   border-radius: 10px;
   z-index: 200;
-  box-shadow: 0 10px 30px rgba(255, 0, 60, 0.4);
-  animation: slide-up 0.3s;
-  text-align: center;
 }
 
 .aviso {
@@ -722,15 +626,13 @@ body {
 }
 
 /* ============================================================
-   RESPONSIVIDADE (MOBILE)
+   RESPONSIVIDADE
 ============================================================ */
 @media (max-width: 600px) {
   body { padding: 10px; }
   .card-entrada { padding: 30px 20px; }
-  .painel-central { padding: 20px; }
-  .desafio-pergunta { font-size: 1.1rem; padding: 18px; }
-  .opcao { padding: 14px 16px; font-size: 1rem; }
-  .titulo-oasis { font-size: 2.6rem; letter-spacing: 0.18em; }
-  .titulo-sub { letter-spacing: 0.25em; font-size: 0.8rem; }
-  .modal-content { padding: 35px 20px; }
+  .titulo-oasis { font-size: 2.5rem; }
+  .painel-central { padding: 15px; }
+  .desafio-pergunta { font-size: 1rem; padding: 15px; }
+  .opcao { padding: 12px 15px; font-size: 0.95rem; }
 }
