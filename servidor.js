@@ -21,7 +21,7 @@ const estado = {
 
 const PONTOS_VITORIA = 100;
 const MIN_JOGADORES = 2;
-const MAX_JOGADORES = 6;
+const MAX_JOGADORES = 5; // <-- LIMITE DE 5 JOGADORES AQUI
 
 const AVATARES = {
   parzival: { id: 'parzival', emoji: '🛡️', nome: 'Parzival', classe: 'Guardião', habilidade: 'Escudo de Gelo', descricao: 'Ao errar, perde metade dos pontos.' },
@@ -66,7 +66,8 @@ function enviarEstado() {
     energia: estado.energia,
     rodada: estado.rodada,
     fase: estado.fase,
-    pontosVitoria: PONTOS_VITORIA
+    pontosVitoria: PONTOS_VITORIA,
+    maxJogadores: MAX_JOGADORES // <-- Envia o limite para o visual do jogo
   });
 }
 
@@ -220,8 +221,19 @@ function resetarEstado() {
 
 io.on('connection', (socket) => {
   socket.on('entrar', ({ nome, avatarId }) => {
-    if (Object.keys(estado.jogadores).length >= MAX_JOGADORES) return socket.emit('erro', 'Sala cheia.');
-    if (estado.fase === 'jogando') return socket.emit('erro', 'Partida em andamento.');
+    if (Object.keys(estado.jogadores).length >= MAX_JOGADORES) {
+      return socket.emit('erro', 'A sala está cheia (máximo de 5 jogadores). Aguarde alguém sair.');
+    }
+    if (estado.fase === 'jogando') {
+      return socket.emit('erro', 'Partida em andamento. Aguarde o fim da rodada para entrar.');
+    }
+    
+    // Impede nomes repetidos
+    const nomeExiste = Object.values(estado.jogadores).some(j => j.nome.toLowerCase() === nome.toLowerCase());
+    if (nomeExiste) {
+      return socket.emit('erro', 'Este nome já está em uso. Escolha outro.');
+    }
+
     const avatarInfo = AVATARES[avatarId] || AVATARES.parzival;
     estado.jogadores[socket.id] = {
       id: socket.id, nome: (nome || 'Anônimo').substring(0, 18),
@@ -232,7 +244,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('iniciarJogo', () => {
-    if (Object.keys(estado.jogadores).length < MIN_JOGADORES) return socket.emit('erro', `Mínimo ${MIN_JOGADORES} jogadores.`);
+    if (Object.keys(estado.jogadores).length < MIN_JOGADORES) return socket.emit('erro', `Mínimo de ${MIN_JOGADORES} jogadores para começar.`);
     if (estado.fase === 'jogando') return;
     resetarEstado();
     estado.fase = 'jogando';
