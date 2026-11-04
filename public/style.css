@@ -133,26 +133,26 @@ body {
 }
 
 /* ============================================================
-   TELAS
+   CONTROLE DE TELAS (AQUI ESTÁ A CORREÇÃO)
 ============================================================ */
 .tela {
-  display: none;
+  display: none; /* Esconde tudo por padrão */
   position: relative;
   z-index: 10;
-  animation: fadeIn 0.4s ease;
 }
 
 .tela.ativa {
-  display: block;
+  display: block; /* Só mostra a tela que tiver a classe "ativa" */
+  animation: fadeIn 0.4s ease;
+}
+
+.escondido {
+  display: none !important; /* Força o sumiço da tela de baixo */
 }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(15px); }
   to { opacity: 1; transform: translateY(0); }
-}
-
-.escondido {
-  display: none !important;
 }
 
 /* ============================================================
