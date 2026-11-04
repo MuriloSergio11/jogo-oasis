@@ -8,7 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
-  <script src="/socket.io/socket.io.js"></script>
+  
+  <!-- CARREGAMENTO DO SOCKET.IO DIRETO DA INTERNET (EVITA TELA PRETA) -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 </head>
 <body>
   <div class="stars"></div>
@@ -27,7 +29,7 @@
       <div class="card-entrada">
         <h2>Bem-vindo ao OASIS</h2>
         <p class="lore">O servidor está morrendo. Cada escolha tem consequência.<br>Encontre o Ovo de Ouro antes que tudo colapse.</p>
-        <p style="text-align: center; color: var(--verde); margin-bottom: 20px; font-weight: bold; font-size: 1.1rem;">Partida de 2 a 5 jogadores</p>
+        <p style="text-align: center; color: var(--neon-green); margin-bottom: 20px; font-weight: bold; font-size: 1.1rem;">Partida de 2 a 5 jogadores</p>
         
         <div class="campo">
           <label>Nome do seu avatar</label>
