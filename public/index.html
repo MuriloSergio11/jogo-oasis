@@ -4,19 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OASIS: Última Esperança</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 </head>
 <body>
-  <!-- FUNDO ANIMADO -->
   <div class="stars"></div>
   <div class="gradient-orb orb1"></div>
   <div class="gradient-orb orb2"></div>
 
-  <!-- CABEÇALHO -->
   <header class="main-header">
     <h1 class="titulo-jogo">
       <span class="titulo-oasis">OASIS</span>
@@ -25,30 +21,44 @@
   </header>
 
   <main>
-    <!-- TELA DE ENTRADA -->
-    <section id="telaEntrada" class="tela ativa">
+    <!-- TELA 1: LOGIN / CADASTRO -->
+    <section id="telaLogin" class="tela ativa">
       <div class="card-entrada">
-        <h2>Bem-vindo ao OASIS</h2>
-        <p class="lore">O servidor está morrendo. Encontre o Ovo de Ouro antes que tudo colapse.</p>
+        <h2>Acesso ao OASIS</h2>
+        <p class="lore">Faça login ou crie sua conta para entrar na arena.</p>
         
         <div class="campo">
-          <label>Nome do seu avatar</label>
-          <input type="text" id="inputNome" placeholder="Digite seu nome..." maxlength="15" autocomplete="off" />
+          <label>Usuário (Nome)</label>
+          <input type="text" id="inputUsuario" placeholder="Seu nome de jogador..." maxlength="15" />
         </div>
-        
         <div class="campo">
-          <label>Escolha seu avatar</label>
-          <div id="gridAvatares" class="grid-avatares"></div>
+          <label>Senha</label>
+          <input type="password" id="inputSenha" placeholder="Sua senha secreta..." maxlength="20" />
         </div>
         
-        <button id="btnEntrar" class="btn-glow">▶ Entrar no OASIS</button>
-        <div id="avisoEntrada" class="aviso escondido"></div>
+        <button id="btnLogin" class="btn-glow" style="margin-bottom: 10px;">▶ Entrar na Conta</button>
+        <button id="btnCadastrar" class="btn-secundario" style="width: 100%;">Criar Nova Conta</button>
+        
+        <div id="avisoLogin" class="aviso escondido" style="margin-top: 15px;"></div>
       </div>
     </section>
 
-    <!-- TELA DO JOGO -->
+    <!-- TELA 2: ESCOLHA DE AVATAR -->
+    <section id="telaAvatar" class="tela escondido">
+      <div class="card-entrada">
+        <h2>Escolha seu Avatar</h2>
+        <p class="lore" id="boasVindasNome">Bem-vindo ao OASIS!</p>
+        
+        <div class="campo">
+          <div id="gridAvatares" class="grid-avatares"></div>
+        </div>
+        
+        <button id="btnEntrarSala" class="btn-glow">▶ Entrar na Sala</button>
+      </div>
+    </section>
+
+    <!-- TELA 3: JOGO -->
     <section id="telaJogo" class="tela escondido">
-      <!-- BARRA DE ENERGIA -->
       <div class="barra-energia-container">
         <div class="energia-label">
           <span>⚡ ENERGIA DO SERVIDOR</span>
@@ -59,16 +69,12 @@
         </div>
       </div>
 
-      <!-- ÁREA PRINCIPAL DO JOGO -->
       <div class="layout-jogo">
-        
-        <!-- PLACAR -->
         <aside class="painel-placar">
           <h3>🏆 PLACAR</h3>
           <ul id="listaJogadores" class="lista-jogadores"></ul>
         </aside>
 
-        <!-- CENTRO (LOBBY OU PERGUNTA) -->
         <div class="painel-central">
           <div id="areaLobby" class="area-lobby">
             <div class="lobby-icon">🌌</div>
@@ -81,11 +87,9 @@
             <p id="desafioPergunta" class="desafio-pergunta"></p>
             <div id="opcoesDesafio" class="opcoes"></div>
             <p id="mensagemRodada" class="mensagem-rodada"></p>
-            <div id="explicacaoCoop" class="explicacao escondido"></div>
           </div>
         </div>
 
-        <!-- CHAT -->
         <aside class="painel-chat">
           <h3>💬 CHAT</h3>
           <div id="chatMensagens" class="chat-mensagens"></div>
@@ -94,25 +98,19 @@
             <button id="btnEnviarChat">➤</button>
           </div>
         </aside>
-
       </div>
     </section>
   </main>
 
-  <!-- MODAL DE FIM DE JOGO -->
   <div id="modalFim" class="modal escondido">
     <div class="modal-content">
-      <div id="modalEmoji" class="modal-emoji">🏆</div>
+      <div class="modal-emoji">🏆</div>
       <h2 id="modalTitulo">FIM DE JOGO</h2>
       <p id="modalMensagem"></p>
-      <button id="btnJogarNovamente" class="btn-glow">⟳ Jogar Novamente</button>
     </div>
   </div>
 
-  <!-- NOTIFICAÇÃO (TOAST) -->
   <div id="toast" class="toast escondido"></div>
-
-  <!-- SCRIPT DO JOGO -->
   <script src="script.js"></script>
 </body>
 </html>
