@@ -67,7 +67,7 @@ function enviarEstado() {
     rodada: estado.rodada,
     fase: estado.fase,
     pontosVitoria: PONTOS_VITORIA,
-    maxJogadores: MAX_JOGADORES // <-- Envia o limite para o frontend
+    maxJogadores: MAX_JOGADORES
   });
 }
 
@@ -221,17 +221,21 @@ function resetarEstado() {
 
 io.on('connection', (socket) => {
   socket.on('entrar', ({ nome, avatarId }) => {
+    // 1. Se a sala estiver cheia
     if (Object.keys(estado.jogadores).length >= MAX_JOGADORES) {
       return socket.emit('erro', 'A sala está cheia (máximo de 5 jogadores). Aguarde alguém sair.');
     }
+    // 2. Se o jogo já estiver rolando
     if (estado.fase === 'jogando') {
       return socket.emit('erro', 'Partida em andamento. Aguarde o fim da rodada para entrar.');
     }
     
-    const nomeExiste = Object.values(estado.jogadores).some(j => j.nome.toLowerCase() === nome.toLowerCase());
-    if (nomeExiste) {
-      return socket.emit('erro', 'Este nome já está em uso. Escolha outro.');
-    }
+    // 3. Limpa conexões fantasmas (se a pessoa recarregou a página, o antigo socket fica preso)
+    Object.keys(estado.jogadores).forEach(id => {
+      if (estado.jogadores[id].nome.toLowerCase() === nome.toLowerCase()) {
+        delete estado.jogadores[id];
+      }
+    });
 
     const avatarInfo = AVATARES[avatarId] || AVATARES.parzival;
     estado.jogadores[socket.id] = {
