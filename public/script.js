@@ -1,3 +1,9 @@
+// Verifica se o Socket.IO carregou
+if (typeof io === 'undefined') {
+  document.body.innerHTML = '<h1 style="color:red; text-align:center; margin-top:50px;">Erro: Não foi possível carregar o Socket.IO.<br>Verifique sua internet e recarregue a página.</h1>';
+  throw new Error('Socket.IO não carregado');
+}
+
 const socket = io();
 let meuId = null;
 let estadoAtual = { jogadores: [], fase: 'lobby', energia: 100, rodada: 0, maxJogadores: 5 };
