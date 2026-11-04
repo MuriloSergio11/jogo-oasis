@@ -1,14 +1,7 @@
-// 1. Verifica se o Socket.IO carregou da internet
-if (typeof io === 'undefined') {
-  document.body.innerHTML = '<h1 style="color:white; text-align:center; margin-top:20%;">Erro de conexão com o servidor.<br>Tente recarregar a página.</h1>';
-  throw new Error('Socket.IO falhou ao carregar');
-}
-
 const socket = io();
-let meuId = null;
+let usuarioLogado = null;
 let avatarSelecionado = 'parzival';
 
-// Avatares
 const AVATARES = {
   parzival: { emoji: '🛡️', nome: 'Parzival' }, 
   art3mis: { emoji: '⚡', nome: 'Art3mis' },
@@ -17,14 +10,53 @@ const AVATARES = {
   og: { emoji: '🔮', nome: 'Og' }
 };
 
-// Função para pegar elementos sem dar erro
-function el(id) { 
-  return document.getElementById(id); 
+const $ = (id) => document.getElementById(id);
+
+// ==========================================
+// 1. TELA DE LOGIN E CADASTRO
+// ==========================================
+$('btnLogin').onclick = () => {
+  const u = $('inputUsuario').value.trim();
+  const s = $('inputSenha').value.trim();
+  if (!u || !s) return mostrarAvisoLogin('Preencha usuário e senha.');
+  socket.emit('login', { usuario: u, senha: s });
+};
+
+$('btnCadastrar').onclick = () => {
+  const u = $('inputUsuario').value.trim();
+  const s = $('inputSenha').value.trim();
+  if (!u || !s) return mostrarAvisoLogin('Preencha usuário e senha.');
+  socket.emit('cadastrar', { usuario: u, senha: s });
+};
+
+function mostrarAvisoLogin(msg) {
+  const aviso = $('avisoLogin');
+  aviso.textContent = '⚠️ ' + msg;
+  aviso.classList.remove('escondido');
+  setTimeout(() => aviso.classList.add('escondido'), 3000);
 }
 
-// 2. Monta os avatares na tela
-const grid = el('gridAvatares');
-if (grid) {
+// Login com Sucesso vindo do servidor
+socket.on('loginSucesso', (data) => {
+  usuarioLogado = data.usuario;
+  avatarSelecionado = data.avatar || 'parzival';
+  
+  $('boasVindasNome').innerHTML = `Bem-vindo, <strong>${usuarioLogado}</strong>!`;
+  $('telaLogin').classList.add('escondido');
+  $('telaAvatar').classList.remove('escondido');
+  
+  montarAvatares();
+});
+
+socket.on('erroLogin', (msg) => {
+  mostrarAvisoLogin(msg);
+});
+
+// ==========================================
+// 2. TELA DE ESCOLHA DE AVATAR
+// ==========================================
+function montarAvatares() {
+  const grid = $('gridAvatares');
   grid.innerHTML = '';
   Object.entries(AVATARES).forEach(([id, info]) => {
     const div = document.createElement('div');
@@ -37,45 +69,24 @@ if (grid) {
     };
     grid.appendChild(div);
   });
-} else {
-  console.error("Erro: O elemento gridAvatares não foi encontrado no HTML.");
 }
 
-// 3. Configura o botão de Entrar
-const btnEntrar = el('btnEntrar');
-if (btnEntrar) {
-  btnEntrar.onclick = () => {
-    const input = el('inputNome');
-    if (!input) return;
-    const nome = input.value.trim();
-    if (!nome) return alert('Digite um nome!');
-    
-    btnEntrar.textContent = 'Conectando...';
-    btnEntrar.disabled = true;
-    socket.emit('entrar', { nome, avatarId: avatarSelecionado });
-  };
-}
+$('btnEntrarSala').onclick = () => {
+  if (!usuarioLogado) return;
+  socket.emit('entrarSala', { usuario: usuarioLogado, avatarId: avatarSelecionado });
+};
 
-// 4. Recebe o sinal verde do servidor e MUDA A TELA
+// Entrou na Sala com Sucesso
 socket.on('bemVindo', (data) => {
-  meuId = data.id;
-  
-  const telaEntrada = el('telaEntrada');
-  const telaJogo = el('telaJogo');
-  
-  if (telaEntrada) {
-    telaEntrada.classList.add('escondido');
-    telaEntrada.classList.remove('ativa');
-  }
-  if (telaJogo) {
-    telaJogo.classList.remove('escondido');
-    telaJogo.classList.add('ativa');
-  }
+  $('telaAvatar').classList.add('escondido');
+  $('telaJogo').classList.remove('escondido');
 });
 
-// 5. Atualiza o Placar e a Barra de Energia
+// ==========================================
+// 3. LÓGICA DO JOGO (O resto que já funcionava)
+// ==========================================
 socket.on('estadoJogo', (estado) => {
-  const lista = el('listaJogadores');
+  const lista = $('listaJogadores');
   if (lista) {
     lista.innerHTML = '';
     [...estado.jogadores].sort((a,b) => b.pontos - a.pontos).forEach(j => {
@@ -85,32 +96,26 @@ socket.on('estadoJogo', (estado) => {
     });
   }
 
-  if(el('energiaValor')) el('energiaValor').textContent = estado.energia + '%';
-  if(el('energiaFill')) el('energiaFill').style.width = estado.energia + '%';
+  if($('energiaValor')) $('energiaValor').textContent = estado.energia + '%';
+  if($('energiaFill')) $('energiaFill').style.width = estado.energia + '%';
 
-  // Controle de telas (Lobby ou Jogo)
   if (estado.fase === 'lobby' || estado.fase === 'finalizado') {
-    if(el('areaLobby')) el('areaLobby').classList.remove('escondido');
-    if(el('areaDesafio')) el('areaDesafio').classList.add('escondido');
-    if(el('lobbyInfo')) el('lobbyInfo').innerHTML = `Jogadores: <strong>${estado.jogadores.length} / ${estado.maxJogadores}</strong>`;
-    if(el('btnIniciar')) el('btnIniciar').disabled = estado.jogadores.length < 2;
+    if($('areaLobby')) $('areaLobby').classList.remove('escondido');
+    if($('areaDesafio')) $('areaDesafio').classList.add('escondido');
+    if($('lobbyInfo')) $('lobbyInfo').innerHTML = `Jogadores: <strong>${estado.jogadores.length} / ${estado.maxJogadores}</strong>`;
+    if($('btnIniciar')) $('btnIniciar').disabled = estado.jogadores.length < 2;
   } else if (estado.fase === 'jogando') {
-    if(el('areaLobby')) el('areaLobby').classList.add('escondido');
-    if(el('areaDesafio')) el('areaDesafio').classList.remove('escondido');
+    if($('areaLobby')) $('areaLobby').classList.add('escondido');
+    if($('areaDesafio')) $('areaDesafio').classList.remove('escondido');
   }
 });
 
-// 6. Botão de Iniciar
-if (el('btnIniciar')) {
-  el('btnIniciar').onclick = () => socket.emit('iniciarJogo');
-}
+if ($('btnIniciar')) $('btnIniciar').onclick = () => socket.emit('iniciarJogo');
 
-// 7. Exibe a Nova Pergunta
 socket.on('novaRodada', (data) => {
-  if(el('mensagemRodada')) el('mensagemRodada').textContent = '';
-  if(el('desafioPergunta')) el('desafioPergunta').textContent = data.p;
-  
-  const opcoesDiv = el('opcoesDesafio');
+  if($('mensagemRodada')) $('mensagemRodada').textContent = '';
+  if($('desafioPergunta')) $('desafioPergunta').textContent = data.p;
+  const opcoesDiv = $('opcoesDesafio');
   if (opcoesDiv) {
     opcoesDiv.innerHTML = '';
     data.o.forEach((texto, index) => {
@@ -126,9 +131,8 @@ socket.on('novaRodada', (data) => {
   }
 });
 
-// 8. Exibe o Resultado da Rodada
 socket.on('resultadoRodada', (res) => {
-  if(el('mensagemRodada')) el('mensagemRodada').textContent = res.mensagem;
+  if($('mensagemRodada')) $('mensagemRodada').textContent = res.mensagem;
   const botoes = document.querySelectorAll('.opcao');
   if (botoes.length > 0 && res.respostaCorreta !== undefined) {
     botoes.forEach((b, i) => {
@@ -138,16 +142,14 @@ socket.on('resultadoRodada', (res) => {
   }
 });
 
-// 9. Fim de Jogo
 socket.on('fimDeJogo', (data) => {
-  if(el('modalTitulo')) el('modalTitulo').textContent = data.titulo;
-  if(el('modalMensagem')) el('modalMensagem').textContent = data.mensagem;
-  if(el('modalFim')) el('modalFim').classList.remove('escondido');
+  if($('modalTitulo')) $('modalTitulo').textContent = data.titulo;
+  if($('modalMensagem')) $('modalMensagem').textContent = data.mensagem;
+  if($('modalFim')) $('modalFim').classList.remove('escondido');
 });
 
-// 10. Tratamento de Erros (Avisos vermelhos)
 socket.on('erro', (msg) => {
-  const toast = el('toast');
+  const toast = $('toast');
   if (toast) {
     toast.textContent = msg;
     toast.classList.remove('escondido');
@@ -155,11 +157,10 @@ socket.on('erro', (msg) => {
   }
 });
 
-// 11. Chat
-const btnEnviarChat = el('btnEnviarChat');
-if (btnEnviarChat) {
-  btnEnviarChat.onclick = () => {
-    const input = el('chatInput');
+// Chat
+if ($('btnEnviarChat')) {
+  $('btnEnviarChat').onclick = () => {
+    const input = $('chatInput');
     if (input && input.value.trim()) {
       socket.emit('chat', { texto: input.value.trim() });
       input.value = '';
@@ -168,7 +169,7 @@ if (btnEnviarChat) {
 }
 
 socket.on('chatMsg', (data) => {
-  const chatBox = el('chatMensagens');
+  const chatBox = $('chatMensagens');
   if (chatBox) {
     const div = document.createElement('div');
     div.className = 'chat-msg';
