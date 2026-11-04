@@ -1,1 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OASIS: Última Esperança</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <div class="stars"></div>
+  <div class="gradient-orb orb1"></div>
+  <div class="gradient-orb orb2"></div>
 
+  <header class="main-header">
+    <h1 class="titulo-jogo">
+      <span class="titulo-oasis">OASIS</span>
+      <span class="titulo-sub">ÚLTIMA ESPERANÇA</span>
+    </h1>
+  </header>
+
+  <main>
+    <section id="telaEntrada" class="tela ativa">
+      <div class="card-entrada">
+        <h2>Bem-vindo ao OASIS</h2>
+        <p class="lore">O servidor está morrendo. Cada escolha tem consequência.<br>Encontre o Ovo de Ouro antes que tudo colapse.</p>
+        <div class="campo">
+          <label>Nome do seu avatar</label>
+          <input type="text" id="inputNome" placeholder="Digite seu nome..." maxlength="18" autocomplete="off" />
+        </div>
+        <div class="campo">
+          <label>Escolha seu avatar</label>
+          <div id="gridAvatares" class="grid-avatares"></div>
+        </div>
+        <button id="btnEntrar" class="btn-glow">▶ Entrar no OASIS</button>
+        <div id="avisoEntrada" class="aviso escondido"></div>
+      </div>
+    </section>
+
+    <section id="telaJogo" class="tela">
+      <div class="barra-energia-container">
+        <div class="energia-label">
+          <span>⚡ ENERGIA DO SERVIDOR</span>
+          <span id="energiaValor" class="energia-valor">100%</span>
+        </div>
+        <div class="barra-energia">
+          <div id="energiaFill" class="energia-fill"></div>
+          <div id="energiaAlerta" class="energia-alerta escondido">⚠️</div>
+        </div>
+      </div>
+
+      <div class="layout-jogo">
+        <aside class="painel-placar">
+          <h3>🏆 PLACAR</h3>
+          <ul id="listaJogadores" class="lista-jogadores"></ul>
+          <div class="meta-info">
+            <div>Meta: <strong id="metaPontos">100 pts</strong></div>
+            <div>Rodada: <strong id="numRodada">0</strong></div>
+          </div>
+        </aside>
+
+        <div class="painel-central">
+          <div id="areaLobby" class="area-lobby">
+            <div class="lobby-icon">🌌</div>
+            <h2>Aguardando o início...</h2>
+            <p id="lobbyInfo">A sala tem <strong>0 jogadores</strong>.</p>
+            <button id="btnIniciar" class="btn-glow">▶ Iniciar Jogo</button>
+            <button id="btnReiniciar" class="btn-secundario">⟳ Reiniciar Sala</button>
+          </div>
+
+          <div id="areaDesafio" class="area-desafio escondido">
+            <div class="desafio-header">
+              <span id="desafioTipo" class="tag-tipo">DESAFIO</span>
+              <span id="desafioTema" class="tag-tema"></span>
+              <span id="desafioTimer" class="tag-timer">00:00</span>
+            </div>
+            <p id="desafioPergunta" class="desafio-pergunta"></p>
+            <div id="opcoesDesafio" class="opcoes"></div>
+            <button id="btnDica" class="btn-dica escondido">💡 Pedir Dica (Curator)</button>
+            <button id="btnOg" class="btn-dica escondido">🔮 Usar Visão (Og)</button>
+            <p id="mensagemRodada" class="mensagem-rodada"></p>
+            <div id="explicacaoCoop" class="explicacao escondido"></div>
+          </div>
+        </div>
+
+        <aside class="painel-chat">
+          <h3>💬 CHAT</h3>
+          <div id="chatMensagens" class="chat-mensagens"></div>
+          <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Mensagem..." maxlength="200" />
+            <button id="btnEnviarChat">➤</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <div id="modalFim" class="modal escondido">
+    <div class="modal-content">
+      <div id="modalEmoji" class="modal-emoji">🏆</div>
+      <h2 id="modalTitulo">FIM DE JOGO</h2>
+      <p id="modalMensagem"></p>
+      <div id="modalPlacarFinal" class="modal-placar"></div>
+      <button id="btnJogarNovamente" class="btn-glow">⟳ Jogar Novamente</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast escondido"></div>
+  <script src="script.js"></script>
+</body>
+</html>
